@@ -19,9 +19,9 @@
         <div class="card-header py-3">
              
              <div class="d-sm-flex align-items-center justify-content-between">
-                <h1 class="h3 mb-0 text-gray-800">Category List</h1>
-                @can('category-create')
-                    <a href="{{route('category.create')}}" class="btn btn-sm btn-primary" >
+                <h1 class="h3 mb-0 text-gray-800">Currency List</h1>
+                @can('currency-create')
+                    <a href="{{route('currency.create')}}" class="btn btn-sm btn-primary" >
                         <i class="fas fa-plus"></i> Add New
                     </a>
                 @endcan

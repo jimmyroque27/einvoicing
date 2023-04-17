@@ -62,7 +62,7 @@ class CurrencyController extends Controller
             // Logic For Save Currency Data
             
             $create_currency = Currency::create([
-                'code' => $request->name,
+                'code' => $request->code,
                 'name' => $request->name,
                 'rate' => $request->rate,
                 'tp_id' => session('user_tp_id'),
@@ -136,7 +136,7 @@ class CurrencyController extends Controller
             DB::beginTransaction();
             $update_currency = Currency::where('id', $id)
                 ->where('tp_id',session('user_tp_id'))->update([         
-                'code' => $request->name,
+                'code' => $request->code,
                 'name' => $request->name,
                 'rate' => $request->rate,
             ]);
@@ -216,6 +216,7 @@ class CurrencyController extends Controller
         if($request->filled('id')){
             $data = Currency::select('*')
                 ->where('name', 'LIKE', '%'. $request->get('id'). '%')
+                ->orwhere('code', 'LIKE', '%'. $request->get('id'). '%')
                 // ->orwhere('ItemCode', 'LIKE', '%'. $request->get('id'). '%')
                 ->where('tp_id', session('user_tp_id'))
                 ->get();

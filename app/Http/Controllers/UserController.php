@@ -8,6 +8,7 @@ use App\Models\UserTaxPayer;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\DataTables\UsersDataTable;
+use App\DataTables\UserTaxPayersDataTable;
 use Spatie\Permission\Models\Role;
 use Illuminate\Validation\Rules\Password;
 
@@ -20,12 +21,6 @@ class UserController extends Controller
      */
     public function index(UsersDataTable $dataTable)
     {
-        // $users = User::select('id', 'email', 'name', 'status')->paginate(5);
-
-        // return view('users.list')->with([
-        //     'users' => $users
-        // ]) ->with('i');
-
         return $dataTable->render('users.list');
     }
 
@@ -103,10 +98,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id, UserTaxPayersDataTable $dataTable)
     {
         //
-       
         $user =  User::whereId($id)->first();
          
         if(!$user){
@@ -114,9 +108,11 @@ class UserController extends Controller
            return back()->with('error', 'User Not Found');
         }
         
-        return view('users.show')->with([
-            'user' => $user
-        ]);
+        return $dataTable->with(['id'=> $id])->render('users.show',compact('user'));
+
+        // return view('users.show')->with([
+        //     'user' => $user
+        // ]);
     }
 
     /**

@@ -62,7 +62,7 @@ class CurrencyDataTable extends DataTable
     }
     protected function getActionColumn($data): string
     {
-        // $showUrl="";
+        $showUrl="";
         // if(Auth::user()->can('currency-show')){
         //     $showUrl ="<a class='waves-effect btn btn-success' title='show' data-value='$data->id' href='".route('currency.show', $data->id)."'><i class='fas fa-fw fa-eye'></i></a> ";
         // }

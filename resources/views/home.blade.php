@@ -63,10 +63,11 @@
     <div class="row p-2 m-0">
 
         <!-- User - Tax Payer Assignment -->
-        
+        @can('user-taxpayer-list','user-taxpayer-create')
         <div class="col-xl-3 mb-4 ">
             <div class="card border-left-primary shadow h-100 ">
                 <div class="card-body">
+                   
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1 ">
@@ -74,15 +75,19 @@
                             </div>
                             <div class="h6 mt-2 ">
                                 @if($UserTaxPayers==0)
-                                    <a class="nav-link font-weight-bold  p-0 m-0 small text-danger" 
-                                        href="{{route('usertaxpayers.create')}}">
-                                        Assign your Tax Payer's Identification Number
-                                    </a>
+                                    @can('user-taxpayer-create')
+                                        <a class="nav-link font-weight-bold  p-0 m-0 small text-danger" 
+                                            href="{{route('usertaxpayers.create',Auth::user()->id)}}">
+                                            Assign your Tax Payer's Identification Number
+                                        </a>
+                                    @endcan
                                 @else
-                                    <a class="nav-link font-weight-bold  p-0 m-0 small text-secondary"
-                                    href="{{route('usertaxpayers.index')}}">
-                                        {{$UserTaxPayers}} Assigned Tax Payer
-                                    </a>
+                                    @can('user-taxpayer-list')
+                                        <a class="nav-link font-weight-bold  p-0 m-0 small text-secondary"
+                                        href="{{route('usertaxpayers.index')}}">
+                                            {{$UserTaxPayers}} Assigned Tax Payer
+                                        </a>
+                                    @endcan
                                 @endif
 
                                 
@@ -93,10 +98,11 @@
                             <i class="fas fa-universal-access fa-2x text-gray-300"></i>
                         </div>
                     </div>
+                
                 </div>
             </div>
         </div>
-
+        @endcan
 {{-- 
         <!-- Earnings (Monthly) Card Example -->
         <div class="col-xl-3 col-md-6 mb-4">

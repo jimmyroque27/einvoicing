@@ -152,10 +152,11 @@ class ContactController extends Controller
         return $TaxPayer;
     }
     public function getBuyer($id){
-        $tp_id = "xxxxx000000xxxxx000xxx000xxx";
-        if(Auth::user()->user_TP !=null){
-            $tp_id = session('user_tp_id');
-        }
+        // $tp_id = "xxxxx000000xxxxx000xxx000xxx";
+        // if(Auth::user()->user_TP !=null){
+        //     $tp_id = session('user_tp_id');
+        // }
+        $tp_id = session('user_tp_id');
         $Contact = Contact::select("*")
         ->where('company_id',$id)
         ->where('tp_id',$tp_id)

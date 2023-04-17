@@ -24,34 +24,51 @@
                     <a href="{{route('users.index')}}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                             class="fas fa-arrow-left fa-sm text-white-50"></i> Back</a>
                 @endcan
+                
             </div>
         </div>
         <div class="card-body">
-            
-            <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-12">
-                    <div class="form-group">
-                        <strong>Name:</strong>
-                        {{ $user->name }}
-                    </div>
+            <div class="form-group row">
+                <div class="col-sm-1">
+                    <strong>Name </strong>
                 </div>
-                <div class="col-xs-12 col-sm-12 col-md-12">
-                    <div class="form-group">
-                        <strong>Email:</strong>
-                        {{ $user->email }}
-                    </div>
-                </div>
-                <div class="col-xs-12 col-sm-12 col-md-12">
-                    <div class="form-group">
-                        <strong>Roles:</strong>
-                        @if(!empty($user->getRoleNames()))
-                            @foreach($user->getRoleNames() as $v)
-                                <label class="badge badge-success">{{ $v }}</label>
-                            @endforeach
-                        @endif
-                    </div>
+                <div class="col-sm-8">
+                    {{ $user->name }}
                 </div>
             </div>
+            <div class="form-group row">
+                <div class="col-sm-1">
+                    <strong>Email </strong>
+                </div>
+                <div class="col-sm-8">
+                    <a href="mailto:{{$user->email}}">
+                        {{ $user->email }}
+                    </a>
+                </div>
+            </div>
+            <div class="form-group row ">
+                <div class="col-sm-1">
+                    <strong>Roles </strong>
+                </div>
+                <div class="col-sm-8">
+                    @if(!empty($user->getRoleNames()))
+                        @foreach($user->getRoleNames() as $v)
+                            <label class="badge badge-success">{{ $v }}</label>
+                        @endforeach
+                    @endif
+                </div>
+            </div>
+            @can('user-taxpayer-create')
+                <div class="form-group row mb-4">
+                    <a href="{{route('usertaxpayers.create',$user->id)}}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                            class="fas fa-plus fa-sm text-white-50 "></i> Assign Tax Payer</a>
+                </div>
+            @endcan
+            @can('user-taxpayer-list')
+                <div class="form-group row">
+                    {{ $dataTable->table() }}
+                </div>
+            @endcan
         </div>
     </div>
 
@@ -59,3 +76,10 @@
 
 
 @endsection
+@push('scripts')
+    <!-- DataTables -->
+    <script type="text/javascript" src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.0.3/js/dataTables.buttons.min.js"></script>
+    {{-- <script src="{{ asset('vendor/datatables/buttons.server-side.js') }}"></script> --}}
+    {{$dataTable->scripts()}}
+@endpush

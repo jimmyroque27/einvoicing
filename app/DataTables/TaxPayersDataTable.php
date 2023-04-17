@@ -27,6 +27,11 @@ class TaxPayersDataTable extends DataTable
             ->addColumn('action',function ($data){
                 return $this->getActionColumn($data);
             })
+            ->editColumn('business_email_address',function ($query) {
+                return "<a href='mailto:$query->business_email_address'>".$query->business_email_address."</a>";
+            })
+            ->escapeColumns([])
+            // business_email_address
             ->setRowId('id');
     }
 
@@ -118,7 +123,7 @@ class TaxPayersDataTable extends DataTable
             Column::make('registered_name')->title("Tax Payer's Name"),
             Column::make('Tin')->title("Tin"),
             Column::make('TIN_BranchCode')->title("Branch"),
-            Column::make('business_email_address')->title("business_email_address Address"),
+            Column::make('business_email_address')->title("E-mail"),
             Column::make('contact_number')->title("Contact No."),
             Column::make('City')->title("City"),
             Column::make('Province')->title("Province"),

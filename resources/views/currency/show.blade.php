@@ -19,9 +19,9 @@
         <div class="card-header py-3">
              
             <div class="d-sm-flex align-items-center justify-content-between ">
-                <h6 class="m-0 font-weight-bold text-primary">Category</h6>
-                @can('category-list')
-                    <a href="{{route('category.index')}}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                <h6 class="m-0 font-weight-bold text-primary">Currency</h6>
+                @can('currency-list')
+                    <a href="{{route('currency.index')}}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                             class="fas fa-arrow-left fa-sm text-white-50"></i> Back</a>
                 @endcan
             </div>
@@ -31,8 +31,16 @@
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-12">
                     <div class="form-group">
-                        <strong>Category Name:</strong>
-                        {{ $category->name }}
+                        <strong>Currency :</strong>
+                        {{ $currency->name }}
+                    </div>
+                    <div class="form-group">
+                        <strong>Code :</strong>
+                        {{ $currency->code }}
+                    </div>
+                    <div class="form-group">
+                        <strong>Rate :</strong>
+                        {{ $currency->rate }}
                     </div>
                 </div>
                  

@@ -66,7 +66,7 @@
         
 
     <!-- Nav Item - Tax Payer File Manager -->
-    @can('taxpayer-list','taxpayer-create')
+    @can('taxpayer-list','taxpayer-create','currency-list','currency-create')
         <li class="nav-item"  >
             <a class="nav-link collapsed pb-2 pt-1" href="#" data-toggle="collapse" data-target="#navTaxPayer"
                 aria-expanded="true" aria-controls="navTaxPayer">
@@ -74,22 +74,40 @@
                 <span>Tax Payers</span>
             </a>
             <div id="navTaxPayer" class="collapse"  data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    @can('taxpayer-list')
-                        <a class="collapse-item pl-1" href="{{ route('taxpayers.index') }}">
-                            
-                            <i class="fas fa-fw fa-list"></i>
-                            <span>Tax Payers List</span>
-                        </a>
-                    @endcan
-                    @can('taxpayer-create')
-                        <a class="collapse-item pl-1" href="{{ route('taxpayers.create') }}">
+                @can('taxpayer-list','taxpayer-create')
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        @can('taxpayer-list')
+                            <a class="collapse-item pl-1" href="{{ route('taxpayers.index') }}">
+                                
+                                <i class="fas fa-fw fa-list"></i>
+                                <span>Tax Payers List</span>
+                            </a>
+                        @endcan
+                        @can('taxpayer-create')
+                            <a class="collapse-item pl-1" href="{{ route('taxpayers.create') }}">
+                                    <i class="fas fa-fw fa-plus-square"></i>
+                                    <span>Add Tax Payer</span>
+                            </a>    
+                        @endcan
+                    
+                    </div>
+                @endcan
+                @can('currency-list','currency-create')
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        @can('currency-list')
+                            <a class="collapse-item pl-1" href="{{ route('currency.index') }}">
+                                <i class="fas fa-fw fa-list"></i>
+                                Currency List
+                            </a>
+                        @endcan
+                        @can('currency-create')
+                            <a class="collapse-item pl-1" href="{{ route('currency.create')}}">
                                 <i class="fas fa-fw fa-plus-square"></i>
-                                <span>Add Tax Payer</span>
-                        </a>    
-                    @endcan
-                
-                </div>
+                                Add Currency
+                            </a>
+                        @endcan
+                    </div>
+                @endcan
             </div>
         </li> 
     @endcan
@@ -148,7 +166,7 @@
     </li>  --}}
 
     <!-- Nav Item - Product File Manager -->
-    @can('product-list','product-create','category-list','category-create','currency-list','currency-create')
+    @can('product-list','product-create','category-list','category-create')
         <li class="nav-item">
             <a class="nav-link collapsed pb-2 pt-1" href="#" data-toggle="collapse" data-target="#navProduct"
                 aria-expanded="true" aria-controls="navProduct">
@@ -191,22 +209,7 @@
                     
                     </div>
                 @endcan
-                @can('currency-list','currency-create')
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        @can('currency-list')
-                            <a class="collapse-item pl-1" href="{{ route('currency.index') }}">
-                                <i class="fas fa-fw fa-list"></i>
-                                Currency List
-                            </a>
-                        @endcan
-                        @can('currency-create')
-                            <a class="collapse-item pl-1" href="{{ route('currency.create')}}">
-                                <i class="fas fa-fw fa-plus-square"></i>
-                                Add Currency
-                            </a>
-                        @endcan
-                    </div>
-                @endcan
+                
             </div>
         </li> 
     @endcan

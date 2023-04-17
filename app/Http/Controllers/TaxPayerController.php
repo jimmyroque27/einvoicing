@@ -281,5 +281,17 @@ class TaxPayerController extends Controller
             throw $th;
         }
     }
+    public function taxpayersList(Request $request)
+    {
+        $data = [];
+  
+        if($request->filled('id')){
+            $data = TaxPayer::select('tp_id','registered_name', 'Tin', 'TIN_BranchCode','id')
+                        ->where('registered_name', 'LIKE', '%'. $request->get('id'). '%')
+                        ->get();
+        }
+    
+        return response()->json($data);
+    }
 
 }

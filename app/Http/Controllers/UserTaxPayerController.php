@@ -26,7 +26,7 @@ class UserTaxPayerController extends Controller
         //     'users' => $users
         // ]);
 
-        return $dataTable->render('users/taxpayers.list');
+        return $dataTable->with('id',Auth::user()->id)->render('users/taxpayers.list');
     }
 
     /**
@@ -34,17 +34,39 @@ class UserTaxPayerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($id)
     {
-        return view('users/taxpayers.add');
+
+        return view('users/taxpayers.add',compact('id'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Show the form for removing Tax Payer in UserTaxPayer Table.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    public function destroy($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $delete_tax_payer = UserTaxPayer::whereId($id)->delete();
+
+            if(!$delete_tax_payer){
+                DB::rollBack();
+                return back()->with('error', 'There is an error while deleting tax payer information.');
+            }
+
+            DB::commit();
+            // return redirect()->route('usertaxpayers.show')->with('success', 'Tax Payer Deleted successfully.');
+            return back()->with('success', 'Tax Payer Deleted successfully.');
+
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
+    }
      
 
     /**
@@ -55,21 +77,31 @@ class UserTaxPayerController extends Controller
         $request->validate([
             'Tin' => 'required',
             'TIN_BranchCode' => 'required',
-            'tp_id' => 'required'
+            'tp_id' => 'required',
+            'user_id' => 'required'
         ]);
         
         try {
             DB::beginTransaction();
 
-            $UserTaxPayers = TaxPayer::select("*")
+            $TaxPayers = TaxPayer::select("id")
                 ->where('Tin',$request->Tin)
                 ->where('TIN_BranchCode',$request->TIN_BranchCode)
                 ->where('tp_id',$request->tp_id)
-                ->find();
+                ->get();
             // Logic For Save User Data
-            if($UserTaxPayers){
+            if($TaxPayers){
+                $UserTaxPayers = UserTaxPayer::select("id")
+                ->where('user_id',$request->user_id)
+                ->where('tp_id',$request->tp_id)
+                ->first();
+                if($UserTaxPayers){
+                    DB::rollBack();
+
+                    return back()->with('error', 'User & Tax Payer Assingment already setup');
+                }
                 $create_user_tp = UserTaxPayer::create([
-                    'user_id' => Auth::user()->id,
+                    'user_id' => $request->user_id,
                     'Tin' => $request->Tin,
                     'TIN_BranchCode' => $request->TIN_BranchCode,
                     'tp_id' => $request->tp_id,
@@ -83,7 +115,7 @@ class UserTaxPayerController extends Controller
                 }
 
                 DB::commit();
-                return redirect()->route('usertaxpayers.index')->with('success', 'User assigned Tax Payer Stored Successfully.');
+                return redirect()->route('users.show',$request->user_id)->with('success', 'User assigned Tax Payer Stored Successfully.');
             }else{
                 DB::rollBack();
 

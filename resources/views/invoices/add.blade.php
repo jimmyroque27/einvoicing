@@ -70,7 +70,11 @@
         font-size: .9rem !important;
         background-color: #fff !important;
     }
-    
+    label>span{
+        font-size: .9em !important;
+        font-weight: normal !important;
+        color: rgb(12, 33, 94);
+    }
 </style>
 <div class="container-fluid m-0 p-0">
 
@@ -124,12 +128,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 pr-3 p-0">
+                    <div class="col-md-5 pr-3 p-0">
                         <label for="buyer_name"   class="m-0 p-0"  >
                             <span class="h6 small ">Name:  </span> 
                         </label>
                         <input 
-                            type="text" 
+                            type="text"  readonly
                             class="form-control  m-0  p-1   form-control-user @error('buyer_name') is-invalid @enderror" 
                             id="buyer_name"
                             placeholder=""  
@@ -197,13 +201,13 @@
                             <span class="text-danger">{{$message}}</span>
                         @enderror
                     </div>
-                    <div class="col-md-2  p-0 mr-0">
+                    <div class="col-md-3  p-0 mr-0">
                         <label for="OrderDate" class="m-0 p-0" >
                             <span class="h6 small ">Order Date: </span> 
                         </label>
                         <input 
                             type="date" 
-                            class="form-control  m-0  p-1   w-75 form-control-user @error('OrderDate') is-invalid @enderror" 
+                            class="form-control  m-0  p-1   w-50 form-control-user @error('OrderDate') is-invalid @enderror" 
                             id="OrderDate"
                             placeholder=""  
                             name="OrderDate" 
@@ -213,25 +217,66 @@
                             <span class="text-danger">{{$message}}</span>
                         @enderror
                     </div>
-                    <div class="col-md-3 pr-1 p-0">
-                        <label for="currency_id"   class="m-0 p-0"  >
+                    
+                                
+                    <div class="col-md-2 pr-3 p-0">
+                        <input 
+                            type="hidden" 
+                            class="form-control  m-0  p-1   form-control-user @error('Currency') is-invalid @enderror" 
+                            id="Currency"
+                            placeholder=""  
+                            name="Currency" 
+                            value="{{ old('Currency') }}">
+                        <input 
+                            type="hidden" 
+                            class="form-control  m-0  p-1   form-control-user @error('ForCur') is-invalid @enderror" 
+                            id="ForCur"
+                            placeholder=""  
+                            name="ForCur" 
+                            value="{{ old('ForCur') }}">
+
+                        <label for="buyer_name"   class="m-0 p-0"  >
                             <span class="h6 small ">Currency:  </span> 
-                        </label>
-                        <select class="form-control" id="search_currency" name="currency_id" width="100%"></select>
+                         </label>
+                        
+                            <select  id="currency_id"  name="currency_id"  value = "old('ConvRate')?old('ConvRate'):0 " class="selectpicker ajax-currency w-100" data-live-search="true"></select>
+                         
+
+                        @error('currency_id')
+                            <span class="text-danger">{{$message}}</span>
+                        @enderror
                     </div>
                     <div class="col-md-1 p-0 pr-1">
-                        <label for="currency_rate" class="m-0 p-0"  >
+                        <label for="ConvRate" class="m-0 p-0"  >
                             <span class="h6 small ">Rate: </span> 
                         </label>
                         <input 
                             type="text" 
-                            class="form-control  m-0  p-1   form-control-user @error('currency_rate') is-invalid @enderror" 
-                            id="currency_rate"
+                            class="form-control  m-0  p-1 floatNumber  form-control-user @error('ConvRate') is-invalid @enderror" 
+                            id="ConvRate"
                             placeholder=""  
-                            name="currency_rate" 
-                            value="{{ old('currency_rate') }}">
+                            name="ConvRate" 
+                            value="{{ old('ConvRate')?old('ConvRate'):0 }}">
 
-                        @error('currency_rate')
+                        @error('ConvRate')
+                            <span class="text-danger">{{$message}}</span>
+                        @enderror
+
+                        
+                    </div>
+                    <div class="col-md-2 p-0 pr-1">
+                        <label for="ForexAmt" class="m-0 p-0"  >
+                            <span class="h6 small ">Converted Amount </span> 
+                        </label>
+                        <input 
+                            type="text" readonly
+                            class="form-control  m-0  p-1 floatNumber  form-control-user @error('ForexAmt') is-invalid @enderror" 
+                            id="ForexAmt"
+                            placeholder=""  
+                            name="ForexAmt" 
+                            value="{{ old('ForexAmt')?old('ForexAmt'):0 }}">
+
+                        @error('ForexAmt')
                             <span class="text-danger">{{$message}}</span>
                         @enderror
 
@@ -257,16 +302,16 @@
                     <button type="button" class="btn btn-danger m-0 ml-2 p-1 pt-0 " id="item_button"><i class='fas fa-fw fa-trash'></i> Item</button>
                  
                 </div>
-                
+                {{-- Summary Total Information --}}
                 <div class="form-group row m-0 p-0 mt-2">
                     {{-- Discount Information --}}
                     <div class="col-sm-4 m-0 p-2 table-bordered">
                         <table class="table  text-dark small m-0   ">
                             <tr>
-                                <td class="m-0 p-0 border-0 " colspan="2">
-                                    <label for="Discount"  class="m-0 p-1" >
-                                        <span class="h6 text-warning">Discount Information</span> 
-                                    </label>
+                                <td class="m-0 p-0 pb-2 border-0 " colspan="2">
+                                    
+                                        <span class="h6 text-info">Discount Information</span> 
+                                 
                                 </td>
                                  
                             </tr>
@@ -361,10 +406,10 @@
                     <div class="col-sm-4 m-0 p-2 table-bordered">
                         <table class="table  text-dark small m-0   ">
                             <tr>
-                                <td class="m-0 p-0 border-0 w-50" colspan="2">
-                                    <label for="Discount"  class="m-0 p-1" >
-                                        <span class="h6 text-warning">Tax Information</span> 
-                                    </label>
+                                <td class="m-0  p-0 pb-2 border-0 w-50" colspan="2">
+                                   
+                                        <span class="h6 text-info">Tax Information</span> 
+                                    
                                 </td>
                                  
                             </tr>
@@ -459,10 +504,10 @@
                     <div class="col-sm-4 m-0 p-2 table-bordered ">
                         <table class="table   text-dark small m-0   ">
                             <tr>
-                                <td class="m-0 p-0 border-0 w-50" colspan="2">
-                                    <label for="Discount"  class="m-0 p-1" >
-                                        <span class="h6 text-warning">Net Amount Summary</span> 
-                                    </label>
+                                <td class="m-0  p-0 pb-2 border-0 w-50" colspan="2">
+                                    
+                                        <span class="h6 text-info">Net Amount Summary</span> 
+                                  
                                 </td>
                                  
                             </tr>
@@ -615,7 +660,7 @@
                                                 <input 
                                                     type="text" 
                                                     class="form-control col-sm-5  m-0  p-1   form-control-user @error('ItemCode') is-invalid @enderror" 
-                                                    id="ItemCode"
+                                                    id="ItemCode" autocomplete="off"
                                                     placeholder=""  
                                                     name="ItemCode" 
                                                     value="{{ old('ItemCode') }}"
@@ -1158,7 +1203,86 @@
         });
     </script>
 
+    {{-- Search Currency - Select picker --}}
+    <script>
+        if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
+            $('.selectpicker').selectpicker('mobile');
+        }
 
+        var path2 = "{{ route('currency.currencyList') }}";
+        var select_currency = {
+            // dropdownParent: $("#addItemModal"),
+            ajax          : {
+                url     :  path2,
+                type    : 'get',
+                dataType: 'json',
+                data    : function() { // This is a function that is run on every request
+                    return {
+                        id:$(".ajax-currency input").val() //this is an input search parameter
+                    };
+                },
+                success: function(data) {
+
+                    //    alert(  JSON.stringify(data));
+                
+                    
+                },
+                error: function(xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    alert(xhr.responseText +status + error);
+                }
+                
+            },
+            locale        : {
+                emptyTitle: 'Currency'
+            },
+            preserveSelected: false,
+            clearOnEmpty: true,
+            cache: false,
+            emptyRequest: true,
+            // log           : 3,
+            preprocessData: function (data) {
+                var i, l = data.length, array2 = [];
+                if (l) {
+                    
+                    for (i = 0; i < l; i++) {
+                        // alert(data[i].item_name + data[i].ItemCode + data[i].id + data[i].UnitofMeasure+data[i].UnitSalesPrice+data[i].VAT_Type)
+                        // alert()
+                        array2.push($.extend(true, data[i], {
+                            text : data[i].code,
+                            value: data[i].code,
+                            currency_id: data[i].id,
+                            ForCur: data[i].name,
+                            Currency: data[i].code,
+                            ConvRate: data[i].rate,
+                            data : {
+                                subtext: " | "+ data[i].name,
+                                currency_id: data[i].id,
+                                ForCur: data[i].name,
+                                Currency: data[i].code,
+                                ConvRate: data[i].rate,
+                            }
+                        }));
+                        // alert(JSON.stringify(array2))
+                    }
+                }
+                
+                return array2;   
+            }
+        };
+
+        $('.selectpicker').selectpicker().filter('.ajax-currency').ajaxSelectPicker(select_currency);
+        $('select.ajax-currency').trigger('change');
+        $('#currency_id').change(function(){
+            
+            $('#Currency').val($(this).find(':selected').data('currency'));
+            $('#ForCur').val($(this).find(':selected').data('forcur'));
+            $('#ConvRate').val($(this).find(':selected').data('convrate'));
+            
+            
+            
+        });
+    </script>
 
     {{-- Check Item ID --}}
     <script>
@@ -1408,6 +1532,11 @@
             if ($('#OtherNonTaxCharge').val() =="" || $('#OtherNonTaxCharge').val()=="."){$('#OtherNonTaxCharge').val('0.00') }
             computeNetSummary(); 
         });
+
+        $('#ConvRate').change(function(){  
+            if ($('#ConvRate').val() =="" || $('#ConvRate').val()=="."){$('#ConvRate').val('0') }
+            computeNetSummary();  
+        });
          
         function computeNetSummary(){
             var TotNetItemSales = 0;
@@ -1432,22 +1561,22 @@
                     Tax_Withheld += parseFloat(data.Tax_Withheld.replace(/,/g, ''));
                     // alert(JSON.stringify(array2))
                 }
-                
-                TotalDiscount = parseFloat($('#ScAmt').val())  + parseFloat($('#PwdAmt').val()) + parseFloat($('#RegAmt').val()) + parseFloat($('#SpeAmt').val())
-                
-                $('#WithholdIncome').val(Tax_Withheld.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-                 
-                VATableSales = VATableSales + parseFloat($('#OtherTaxRev').val()) - TotalDiscount;
-                TotNetSalesAftDisct = TotNetItemSales + parseFloat($('#OtherTaxRev').val()) - TotalDiscount;
-                VATAmt = (VATableSales - (VATableSales / 1.12));
-                VATableSales = (VATableSales / 1.12);
-                TotalTax =  parseFloat($('#WithholdIncome').val().replace(/,/g, '')) + parseFloat($('#WithholdBusVAT').val()) + parseFloat($('#WithholdBusPT').val())
-                NetSalesAfterTax = TotNetSalesAftDisct - TotalTax;
-                NetAmtPay =  NetSalesAfterTax + parseFloat($('#OtherNonTaxCharge').val()) ;
-
-                // alert(($('#ScAmt').val()));
-                
             }
+            TotalDiscount = parseFloat($('#ScAmt').val())  + parseFloat($('#PwdAmt').val()) + parseFloat($('#RegAmt').val()) + parseFloat($('#SpeAmt').val())
+            
+            $('#WithholdIncome').val(Tax_Withheld.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+                
+            VATableSales = VATableSales + parseFloat($('#OtherTaxRev').val()) - TotalDiscount;
+            TotNetSalesAftDisct = TotNetItemSales + parseFloat($('#OtherTaxRev').val()) - TotalDiscount;
+            VATAmt = (VATableSales - (VATableSales / 1.12));
+            VATableSales = (VATableSales / 1.12);
+            TotalTax =  parseFloat($('#WithholdIncome').val().replace(/,/g, '')) + parseFloat($('#WithholdBusVAT').val()) + parseFloat($('#WithholdBusPT').val())
+            NetSalesAfterTax = TotNetSalesAftDisct - TotalTax;
+            NetAmtPay =  NetSalesAfterTax + parseFloat($('#OtherNonTaxCharge').val()) ;
+
+            // alert(($('#ScAmt').val()));
+            
+         
             
             $('#VATableSales').val(VATableSales.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
             $('#VATAmt').val(VATAmt.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
@@ -1455,7 +1584,10 @@
             $('#TotNetSalesAftDisct').val(TotNetSalesAftDisct.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
             // $('#NetSalesAfterTax').val(NetSalesAfterTax.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
             $('#NetAmtPay').val(NetAmtPay.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            
+            $('#ForexAmt').val('0.00');
+            if (parseFloat($('#ConvRate').val()) > 0){
+                $('#ForexAmt').val(NetAmtPay * parseFloat($('#ConvRate').val()) );
+            }
         };
        
         

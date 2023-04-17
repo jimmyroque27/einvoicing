@@ -23,12 +23,53 @@
             <form method="POST" action="{{route('usertaxpayers.assign')}}">
                 @csrf
             
+                    @if ((session('role_name')=="Admin") || (session('role_name')=="Admin"))
+                        <div class="form-group row  m-0 p-0 mb-4">
+                            <div class="col-md-5 pr-3 p-0">
+                                <label for="tp_name"   class="m-0 p-0"  >
+                                    <span class="h6 small ">Tax Payer:  </span> 
+                                </label>
+                                 
 
+                                
+                                <select  id="tp_name"  name="tp_name" class="selectpicker ajax-taxpayer w-100" data-live-search="true"></select>
+                                
+
+                                @error('tp_name')
+                                    <span class="text-danger">{{$message}}</span>
+                                @enderror
+                            </div>
+                        </div>
+
+ 
+                    @endif
                     {{-- TIN/Branch/Birth Date --}}
                     <div class="form-group row  m-0 p-0 mb-4">
-                        <div class="col-sm-2  mt-4">
-                            Tax Payer:
+                       
+                        <div class="col-sm-4 m-0 p-0 pr-1">
+                            <input 
+                                type="hidden" 
+                                class="form-control intNumber mt-n3 form-control-user rounded-0 @error('user_id') is-invalid @enderror" 
+                                id="user_id"
+                                name="user_id" 
+                                value="{{ $id }}">
+                            <label for="tp_id" class="col-sm-12 pl-1">
+                                <span class="h6 small bg-white text-muted pt-1 pl-1 pr-1">Tax Payer's ID <span style="color:red;">*</span> </span> 
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-control intNumber mt-n3 form-control-user rounded-0 @error('tp_id') is-invalid @enderror" 
+                                id="tp_id"
+                                placeholder="" 
+                                maxlength="20"
+                                name="tp_id" 
+                                value="{{ old('tp_id') }}">
+    
+                            @error('tp_id')
+                                <span class="text-danger">{{$message}}</span>
+                            @enderror
                         </div>
+                       
                         <div class="col-sm-4 m-0 p-0 pr-1">
                             
                             <label for="Tin" class="col-sm-12 pl-1">
@@ -65,24 +106,7 @@
                                 <span class="text-danger">{{$message}}</span>
                             @enderror
                         </div>
-                        <div class="col-sm-4 m-0 p-0 pr-1">
-                            
-                            <label for="tp_id" class="col-sm-12 pl-1">
-                                <span class="h6 small bg-white text-muted pt-1 pl-1 pr-1">Tax Payer's ID <span style="color:red;">*</span> </span> 
-                            </label>
-                            <input 
-                                type="text" 
-                                class="form-control intNumber mt-n3 form-control-user rounded-0 @error('tp_id') is-invalid @enderror" 
-                                id="tp_id"
-                                placeholder="" 
-                                maxlength="20"
-                                name="tp_id" 
-                                value="{{ old('tp_id') }}">
-    
-                            @error('tp_id')
-                                <span class="text-danger">{{$message}}</span>
-                            @enderror
-                        </div>
+                        
                          
                     </div>
  
@@ -100,3 +124,82 @@
 
 
 @endsection
+@push('scripts')
+
+    {{-- Select Tax Payer - Select picker --}}
+    <script>
+        if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
+            $('.selectpicker').selectpicker('mobile');
+        }
+
+        var path2 = "{{ route('taxpayers.taxpayersList') }}";
+        
+        var select_tp_name = {
+            ajax          : {
+                url     :  path2,
+                type    : 'get',
+                dataType: 'json',
+                data    : function() { // This is a function that is run on every request
+                    return {
+                        id:$(".ajax-taxpayer input").val() //this is an input search parameter
+                    };
+                },
+                success: function(data) {
+                    //    alert(  JSON.stringify(data));
+                },
+                error: function(xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    alert(xhr.responseText +status + error);
+                }
+                
+            },
+            locale        : {
+                emptyTitle: 'Assign Tax Payer'
+            },
+            preserveSelected: false,
+            clearOnEmpty: true,
+            cache: false,
+            emptyRequest: true,
+            // log           : 3,
+            preprocessData: function (data) {
+                var i, l = data.length, array2 = [];
+                //  alert(data[i].item_name + data[i].ItemCode + data[i].id + data[i].UnitofMeasure+data[i].UnitSalesPrice+data[i].VAT_Type)
+                        // alert()
+                if (l) {
+                    
+                    for (i = 0; i < l; i++) {
+                       
+                        array2.push($.extend(true, data[i], {
+                            text : data[i].registered_name,
+                            value: data[i].registered_name,
+                            tp_id: data[i].tp_id,
+                            Tin: data[i].Tin,
+                            Tin_BranchCode: data[i].TIN_BranchCode,
+                            
+                            data : {
+                                subtext: "Tax Payer ID:"+ data[i].tp_id,
+                                tp_id: data[i].tp_id,
+                                tp_name: data[i].registered_name,
+                                Tin: data[i].Tin,
+                                Tin_BranchCode: data[i].TIN_BranchCode,
+                            }
+                        }));
+                        // alert(JSON.stringify(array2))
+                    }
+                }
+                
+                return array2;   
+            }
+        };
+
+        $('.selectpicker').selectpicker().filter('.ajax-taxpayer').ajaxSelectPicker(select_tp_name);
+        $('select.ajax-taxpayer').trigger('change');
+        $('#tp_name').change(function(){
+            $('#tp_id').val($(this).find(':selected').data('tp_id'));
+            $('#TIN_BranchCode').val($(this).find(':selected').data('tin_branchcode'));
+            $('#Tin').val($(this).find(':selected').data('tin'));
+        });
+    </script>
+
+ 
+@endpush

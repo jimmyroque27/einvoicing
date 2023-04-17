@@ -53,7 +53,7 @@ Route::middleware('auth')->group(function(){
 
     Route::resource('currency', App\Http\Controllers\CurrencyController::class,['except' => 'destroy']);
     Route::get('/currency/destroy/{id}', [App\Http\Controllers\CurrencyController::class, 'destroy'])->name('currency.destroy');
-    // Route::get('/currency/currencyList',[App\Http\Controllers\CurrencyController::class,'currencyList'])->name('currency.currencyList');
+    Route::get('/currencyList',[App\Http\Controllers\CurrencyController::class,'currencyList'])->name('currency.currencyList');
 
    
     // Route::resource('roles', RoleController::class);
@@ -65,6 +65,7 @@ Route::middleware('auth')->group(function(){
     // Tax Payers Management
     Route::resource('taxpayers', App\Http\Controllers\TaxPayerController::class,['except' => 'destroy']);
     Route::get('/taxpayers/destroy/{user_id}', [App\Http\Controllers\TaxPayerController::class, 'destroy'])->name('taxpayers.destroy');
+    Route::get('taxpayersList',[App\Http\Controllers\TaxPayerController::class,'taxpayersList'])->name('taxpayers.taxpayersList');
     
 
     // User Tax Payer Management
@@ -75,10 +76,11 @@ Route::middleware('auth')->group(function(){
         Route::post('/taxpayers/assign', [App\Http\Controllers\UserTaxPayerController::class, 'assign'])->name('usertaxpayers.assign');
         Route::get('/taxpayers/status/{id}', [App\Http\Controllers\UserTaxPayerController::class, 'statusOn'])->name('usertaxpayers.statusOn');
         
-        Route::get('/taxpayers/create', [App\Http\Controllers\UserTaxPayerController::class, 'create'])->name('usertaxpayers.create');
+        Route::get('/taxpayers/create/{id}', [App\Http\Controllers\UserTaxPayerController::class, 'create'])->name('usertaxpayers.create');
+        Route::get('/taxpayers/destroy/{user_id}', [App\Http\Controllers\UserTaxPayerController::class, 'destroy'])->name('usertaxpayers.destroy');
     });
-     Route::get('/user/taxpayers/destroy/{user_id}', [App\Http\Controllers\UserTaxPayerController::class, 'destroy'])->name('usertaxpayers.destroy');
-
+     
+     
     // Contacts Management
     Route::resource('contacts', App\Http\Controllers\ContactController::class,['except' => 'destroy']);
     Route::get('/contacts/destroy/{user_id}', [App\Http\Controllers\ContactController::class, 'destroy'])->name('contacts.destroy');

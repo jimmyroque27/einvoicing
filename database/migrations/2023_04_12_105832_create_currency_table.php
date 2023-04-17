@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('code',5)->nullable();
             $table->string('name',100)->nullable();
             $table->float('rate')->default(0);
+            $table->string('tp_id',20)->nullable(0);
             $table->timestamps();
         });
     }
