@@ -54,7 +54,7 @@ class AlphaTaxCodeController extends Controller
         $request->validate([
             'atc_code' => 'required',
             'description' => 'required',
-            'coverage' => 'required',
+             
             'type' => 'required',
             'ewt_rate' => 'required',
              
@@ -63,14 +63,17 @@ class AlphaTaxCodeController extends Controller
         try {
             DB::beginTransaction();
             // Logic For Save AlphaTaxCode Data
-            
+            $type="Individual";
+            if($request->type=='1'){
+                $type="Corporation";
+            }
             $create_atc = AlphaTaxCode::create([
                
                 // 'tp_id' => session('user_tp_id'),
-                'atc_code' =>  $request->atc_code,
+                'atc_code' =>  strtoupper($request->atc_code),
                 'description' =>  $request->description,
                 'coverage' =>  $request->coverage,
-                'type' =>  $request->type,
+                'type' =>  $type,
                 'ewt_rate' =>  $request->ewt_rate,  
             ]);
         
@@ -82,11 +85,6 @@ class AlphaTaxCodeController extends Controller
                 return back()->with('error', 'Something went wrong while saving atc data');
             }
              
-            if((session('user_tp_id') == '0000000000')){
-                DB::rollBack();
-
-                return back()->with('error', 'No assigned Tax Payer... Unable to save data...');
-            }
            
             
             DB::commit();
@@ -130,15 +128,26 @@ class AlphaTaxCodeController extends Controller
     {
 
         $this->validate($request, [
-            'name' => 'required',
+            'atc_code' => 'required',
+            'description' => 'required',
+            
+            'type' => 'required',
+            'ewt_rate' => 'required',
         ]);
      
-          
+        $type="Individual";
+        if($request->type=='1'){
+            $type="Corporation";
+        }
         
         try {
             DB::beginTransaction();
             $update_atc = AlphaTaxCode::where('id', $id)->update([         
-                'name' => $request->name,
+                'atc_code' =>  strtoupper($request->atc_code),
+                'description' =>  $request->description,
+                'coverage' =>  $request->coverage,
+                'type' =>  $type,
+                'ewt_rate' =>  $request->ewt_rate, 
             ]);
 
             if(!$update_atc){
@@ -201,7 +210,7 @@ class AlphaTaxCodeController extends Controller
             
            return back()->with('error', 'ATC Not Found');
         }
-        
+        // dd($atc);
         return view('atc.show')->with([
             'atc' => $atc
         ]);

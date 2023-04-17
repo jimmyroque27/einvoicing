@@ -148,7 +148,7 @@
     </li>  --}}
 
     <!-- Nav Item - Product File Manager -->
-    @can('product-list','product-create','category-list','category-create')
+    @can('product-list','product-create','category-list','category-create','currency-list','currency-create')
         <li class="nav-item">
             <a class="nav-link collapsed pb-2 pt-1" href="#" data-toggle="collapse" data-target="#navProduct"
                 aria-expanded="true" aria-controls="navProduct">
@@ -191,13 +191,29 @@
                     
                     </div>
                 @endcan
+                @can('currency-list','currency-create')
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        @can('currency-list')
+                            <a class="collapse-item pl-1" href="{{ route('currency.index') }}">
+                                <i class="fas fa-fw fa-list"></i>
+                                Currency List
+                            </a>
+                        @endcan
+                        @can('currency-create')
+                            <a class="collapse-item pl-1" href="{{ route('currency.create')}}">
+                                <i class="fas fa-fw fa-plus-square"></i>
+                                Add Currency
+                            </a>
+                        @endcan
+                    </div>
+                @endcan
             </div>
         </li> 
     @endcan
 
 
     @can('user-list','user-create','permission-list','permission-create','role-list','role-create',
-         'atc-list','atc-create','currency-list','currency-create')
+         'atc-list','atc-create' )
         <!-- Divider -->
          
 
@@ -304,35 +320,7 @@
                 </div>
             </li>
         @endcan
-        @can('currency-list','currency-create')
-            <li class="nav-item">
-                <a class="nav-link collapsed pb-2 pt-1" href="#" data-toggle="collapse" data-target="#navCurrency"
-                    aria-expanded="true" aria-controls="navCurrency">
-                    <i class="fas fa-fw fa-money-bill-wave"></i>
-                    <span>Currency</span>
-                </a>
-                <div id="navCurrency" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                     
-                     
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        @can('currency-list')
-                            <a class="collapse-item pl-1" href="{{ route('admin.permission.index') }}">
-                                <i class="fas fa-fw fa-list"></i>
-                                Currency List
-                            </a>
-                        @endcan
-                        @can('currency-create')
-                            <a class="collapse-item pl-1" href="{{ route('admin.permission.create')}}">
-                                <i class="fas fa-fw fa-plus-square"></i>
-                                Add Currency
-                            </a>
-                        @endcan
-                    </div>
-                     
-                    
-                </div>
-            </li>
-        @endcan
+       
          <!-- Divider -->
          <hr class="sidebar-divider d-none d-md-block">
     @endcan

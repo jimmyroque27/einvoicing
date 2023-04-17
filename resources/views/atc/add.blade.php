@@ -5,6 +5,10 @@
     input, select, option{
         border-radius: 0px !important;
     }
+    textarea{
+        font-size: 1em !important;
+        padding:2px !important;
+    }
 </style>
 
 <div class="container-fluid m-0 p-0 rounded-0">
@@ -29,11 +33,11 @@
                         class="fas fa-arrow-left fa-sm text-white-50"></i> Back</a>
             </div>
         </div>
-        <div class="card-body">
+        <div class="card-body small">
             {!! Form::open(array('route' => 'atc.store','method'=>'POST')) !!}
             {{-- ATC --}}
             <div class="form-group row ">
-                <div class="col-sm-2">
+                <div class="col-sm-2 pt-1">
                     <strong>ATC Code:</strong>
                 </div>
                 <div class="col-sm-2">
@@ -45,44 +49,44 @@
             </div>
             {{-- Description --}}
             <div class="form-group row ">
-                <div class="col-sm-2  ">
+                <div class="col-sm-2 pt-1 ">
                     <strong>Description:</strong>
                 </div>
                 <div class="col-sm-10  ">
-                    {!! Form::textarea('description', old('description'), array('placeholder' => '','class' => 'form-control rounded-0','autocomplete'=>'off','rows'=>"2")) !!}
+                    {!! Form::textarea('description', old('description'), array('placeholder' => '','class' => 'form-control rounded-0 small','autocomplete'=>'off','rows'=>"2")) !!}
                     @error('description')
                         <span class="text-danger">{{$message}}</span>
                     @enderror
                 </div>
             </div>
             <div class="form-group row ">
-                <div class="col-sm-2  ">
+                <div class="col-sm-2 pt-1 ">
                     <strong>Coverage:</strong>
                 </div>
                 <div class="col-sm-10 ">
                     
-                    {!! Form::textarea('coverage', old('coverage'), array('placeholder' => '','class' => 'form-control rounded-0','autocomplete'=>'off','rows'=>"2")) !!}
+                    {!! Form::textarea('coverage', old('coverage'), array('placeholder' => '','class' => 'form-control rounded-0 small','autocomplete'=>'off','rows'=>"2")) !!}
                     @error('coverage')
                         <span class="text-danger">{{$message}}</span>
                     @enderror
                 </div>
             </div>
             <div class="form-group row ">
-                <div class="col-sm-2 mb-4 ">
+                <div class="col-sm-2 pt-1  ">
                     <strong>Type:</strong>
                 </div>
-                <div class="col-sm-10 mb-4 ">
-                    <?php $indcorp = array("Individual", "Corporation")   ?>
+                <div class="col-sm-10 ">
+                    <?php $indcorp = array("Individual","Corporation")   ?>
                      
-                    {!! Form::select('type',  $indcorp,old('type'), array('placeholder' => '','class' => 'form-control col-sm-2' )) !!}
+                    {!! Form::select('type',  $indcorp, 0, array('placeholder' => '','class' => 'form-control col-sm-2' )) !!}
                    
                     @error('type')
                         <span class="text-danger">{{$message}}</span>
                     @enderror
                 </div>
             </div>
-            <div class="form-group row ">
-                <div class="col-sm-2  ">
+            <div class="form-group row  mb-4">
+                <div class="col-sm-2 pt-1 ">
                     <strong>EWT Rate %:</strong>
                 </div>
                 <div class="col-sm-1 ">
@@ -93,6 +97,7 @@
                     @enderror
                 </div>
             </div>
+            <hr>
             <div class="col-xs-12 col-sm-12 col-md-12 text-center">
                 <button type="submit" class="btn btn-primary">Submit</button>
             </div>

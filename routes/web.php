@@ -44,17 +44,18 @@ Route::middleware('auth')->group(function(){
     // User Management
     Route::resource('users', App\Http\Controllers\UserController::class,['except' => 'destroy']);
     Route::get('/users/destroy/{id}', [App\Http\Controllers\UserController::class, 'destroy'])->name('users.destroy');
-    
+    Route::get('/users/status/{user_id}/{status_code}', [App\Http\Controllers\UserController::class, 'updateStatus'])->name('users.status.update');
+
 
     Route::resource('atc', App\Http\Controllers\AlphaTaxCodeController::class,['except' => 'destroy']);
     Route::get('/atc/destroy/{id}', [App\Http\Controllers\AlphaTaxCodeController::class, 'destroy'])->name('atc.destroy');
     Route::get('/atc/atcList',[App\Http\Controllers\AlphaTaxCodeController::class,'atcList'])->name('atc.atcList');
 
+    Route::resource('currency', App\Http\Controllers\CurrencyController::class,['except' => 'destroy']);
+    Route::get('/currency/destroy/{id}', [App\Http\Controllers\CurrencyController::class, 'destroy'])->name('currency.destroy');
+    // Route::get('/currency/currencyList',[App\Http\Controllers\CurrencyController::class,'currencyList'])->name('currency.currencyList');
 
-    // To Update Users
-    Route::get('/users/status/{user_id}/{status_code}', [App\Http\Controllers\UserController::class, 'updateStatus'])->name('users.status.update');
-    // Route::get('/users/destroy/{user_id}', [App\Http\Controllers\UserController::class, 'destroy'])->name('users.destroy');
-
+   
     // Route::resource('roles', RoleController::class);
   
 

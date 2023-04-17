@@ -5,30 +5,30 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use App\Models\Category;
-use App\DataTables\CategoryDataTable;
+use App\Models\Currency;
+use App\DataTables\CurrencyDataTable;
 
-class CategoryController extends Controller
+class CurrencyController extends Controller
 {
     function __construct()
     {
-         $this->middleware('permission:category-list|category-create|category-edit|category-delete', ['only' => ['index','store']]);
-         $this->middleware('permission:category-create', ['only' => ['create','store']]);
-         $this->middleware('permission:category-edit', ['only' => ['edit','update']]);
-         $this->middleware('permission:category-delete', ['only' => ['destroy']]);
-         $this->middleware('permission:category-show', ['only' => ['show']]);
-         $this->middleware('permission:product-create', ['only' => ['categoryList']]);
+         $this->middleware('permission:currency-list|currency-create|currency-edit|currency-delete', ['only' => ['index','store']]);
+         $this->middleware('permission:currency-create', ['only' => ['create','store']]);
+         $this->middleware('permission:currency-edit', ['only' => ['edit','update']]);
+         $this->middleware('permission:currency-delete', ['only' => ['destroy']]);
+         $this->middleware('permission:currency-show', ['only' => ['show']]);
+         $this->middleware('permission:product-create', ['only' => ['currencyList']]);
     }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(CategoryDataTable $dataTable)
+    public function index(CurrencyDataTable $dataTable)
     {
          
 
-        return $dataTable->render('category.list');
+        return $dataTable->render('currency.list');
     }
 
     /**
@@ -39,7 +39,7 @@ class CategoryController extends Controller
     public function create()
     {
          
-        return view('category.add');
+        return view('currency.add');
     }
 
     /**
@@ -51,26 +51,30 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'code' => 'required',
             'name' => 'required',
+            'rate' => 'required',
              
         ]);
         
         try {
             DB::beginTransaction();
-            // Logic For Save Category Data
+            // Logic For Save Currency Data
             
-            $create_category = Category::create([
+            $create_currency = Currency::create([
+                'code' => $request->name,
                 'name' => $request->name,
+                'rate' => $request->rate,
                 'tp_id' => session('user_tp_id'),
                     
             ]);
         
             
 
-            if(!$create_category ){
+            if(!$create_currency ){
                 DB::rollBack();
 
-                return back()->with('error', 'Something went wrong while saving category data');
+                return back()->with('error', 'Something went wrong while saving currency data');
             }
              
             if((session('user_tp_id') == '0000000000')){
@@ -81,7 +85,7 @@ class CategoryController extends Controller
            
             
             DB::commit();
-            return redirect()->route('category.index')->with('success', 'Category Stored Successfully.');
+            return redirect()->route('currency.index')->with('success', 'Currency Stored Successfully.');
 
 
         } catch (\Throwable $th) {
@@ -100,14 +104,14 @@ class CategoryController extends Controller
      */
     public function edit($id)
     {
-        $category = Category::find($id);
+        $currency = Currency::find($id);
         
 
-        if(!$category){
-            return back()->with('error', 'Category Not Found');
+        if(!$currency){
+            return back()->with('error', 'Currency Not Found');
         }
 
-        return view('category.edit',compact('category'));
+        return view('currency.edit',compact('currency'));
     }
 
     /**
@@ -121,26 +125,30 @@ class CategoryController extends Controller
     {
 
         $this->validate($request, [
+            'code' => 'required',
             'name' => 'required',
+            'rate' => 'required',
         ]);
      
           
         
         try {
             DB::beginTransaction();
-            $update_category = Category::where('id', $id)
+            $update_currency = Currency::where('id', $id)
                 ->where('tp_id',session('user_tp_id'))->update([         
+                'code' => $request->name,
                 'name' => $request->name,
+                'rate' => $request->rate,
             ]);
 
-            if(!$update_category){
+            if(!$update_currency){
                 DB::rollBack();
 
-                return back()->with('error', 'Something went wrong while update category data');
+                return back()->with('error', 'Something went wrong while update currency data');
             }
             
             DB::commit();
-            return redirect()->route('category.index')->with('success', 'Category Updated Successfully.');
+            return redirect()->route('currency.index')->with('success', 'Currency Updated Successfully.');
 
 
         } catch (\Throwable $th) {
@@ -160,16 +168,16 @@ class CategoryController extends Controller
         try {
             DB::beginTransaction();
 
-            $delete_category = Category::whereId($id)
+            $delete_currency = Currency::whereId($id)
             ->where('tp_id',session('user_tp_id'))->delete();
 
-            if(!$delete_category){
+            if(!$delete_currency){
                 DB::rollBack();
-                return back()->with('error', 'There is an error while deleting category.');
+                return back()->with('error', 'There is an error while deleting currency.');
             }
             
             DB::commit();
-            return redirect()->route('category.index')->with('success', 'Category Deleted successfully.');
+            return redirect()->route('currency.index')->with('success', 'Currency Deleted successfully.');
 
 
 
@@ -188,31 +196,31 @@ class CategoryController extends Controller
     {
         //
        
-        $category =  Category::whereId($id)
-        ->where('tp_id',session('user_tp_id'))->first();
+        $currency =  Currency::whereId($id)
+            ->where('tp_id',session('user_tp_id'))->first();
          
-        if(!$category){
+        if(!$currency){
             
-           return back()->with('error', 'Category Not Found');
+           return back()->with('error', 'Currency Not Found');
         }
         
-        return view('category.show')->with([
-            'category' => $category
+        return view('currency.show')->with([
+            'currency' => $currency
         ]);
     }
-    // Category List use for Select Picker in add/edit Products (JSON Format)
-    public function categorylist(Request $request)
+    // Currency List use for Select Picker in add/edit Products (JSON Format)
+    public function currencylist(Request $request)
     {
         $data = [];
         //    dd($request->filled('id'));
         if($request->filled('id')){
-            $data = Category::select('*')
+            $data = Currency::select('*')
                 ->where('name', 'LIKE', '%'. $request->get('id'). '%')
                 // ->orwhere('ItemCode', 'LIKE', '%'. $request->get('id'). '%')
                 ->where('tp_id', session('user_tp_id'))
                 ->get();
         }else{
-            // $data = Category::select('*')
+            // $data = Currency::select('*')
             //     // ->where('name', 'LIKE', '%'. $request->get('id'). '%')
             //     // ->orwhere('ItemCode', 'LIKE', '%'. $request->get('id'). '%')
             //     ->where('tp_id', session('user_tp_id'))

@@ -65,6 +65,15 @@
         margin:0px;
         border-radius: 0%;
     }
+ 
+    input.form-control, select.form-control{
+        padding: 2px !important;
+        /* margin: 2px 2px 2px 2px !important; */
+        font-size: .9rem !important;
+        height: 30px !important;
+    }
+ 
+     
 </style>
 <body   id="page-top">
 
