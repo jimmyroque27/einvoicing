@@ -84,7 +84,8 @@ class ItemController extends Controller
             'UnitofMeasure' => 'required',
             'UnitSalesPrice' => 'required',
             'VAT_Type' => 'required' ,
-            'category_id' => 'required' 
+            'category_id' => 'required' ,
+            'category_name' => 'required' 
         ]);
          
         if (session('user_tp_id') == '0000000000'){
@@ -99,6 +100,7 @@ class ItemController extends Controller
                 'user_id' => Auth::user()->id,
                 'tp_id' => session('user_tp_id'),
                 'category_id' => $request->category_id,
+                'category_name' => $request->category_name,
                 // UserTP_id
                 'item_name' => $request->item_name,
                 'Description' => $request->Description,
@@ -118,6 +120,101 @@ class ItemController extends Controller
 
             DB::commit();
             return redirect()->route('products.index'  )->with('success', 'Item Stored Successfully.');
+
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        $product = Item::find($id);
+        
+
+        if(!$product){
+            return back()->with('error', 'Product Not Found');
+        }
+
+        return view('products.edit',compact('product'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+
+        $this->validate($request, [
+           
+            'item_name' => 'required',
+            'Description' => 'required',
+            'UnitofMeasure' => 'required',
+            'UnitSalesPrice' => 'required',
+            'VAT_Type' => 'required' ,
+            'category_id' => 'required' ,
+            'category_name' => 'required' 
+        ]);
+     
+          
+        
+        try {
+            DB::beginTransaction();
+            $update_product = Item::where('id', $id)
+                ->update([         
+                 
+                'category_id' => $request->category_id,
+                'category_name' => $request->category_name,
+                'item_name' => $request->item_name,
+                'Description' => $request->Description,
+                'UnitofMeasure' => $request->UnitofMeasure,
+                'UnitSalesPrice' => $request->UnitSalesPrice,
+                'VAT_Type' => $request->VAT_Type,
+                'EWT_Rate' => $request->EWT_Rate,
+                'ATC' => $request->ATC,
+             ]);
+
+            if(!$update_product){
+                DB::rollBack();
+
+                return back()->with('error', 'Something went wrong while update product data');
+            }
+            
+            DB::commit();
+            return redirect()->route('products.index')->with('success', 'Product Updated Successfully.');
+
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
+    }
+    public function destroy($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $delete_product = Item::whereId($id)->delete();
+
+            if(!$delete_product){
+                DB::rollBack();
+                return back()->with('error', 'There is an error while deleting Product information.');
+            }
+
+            DB::commit();
+            return redirect()->route('products.index')->with('success', 'Product Deleted successfully.');
+
 
 
         } catch (\Throwable $th) {

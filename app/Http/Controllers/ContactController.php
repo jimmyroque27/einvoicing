@@ -59,6 +59,7 @@ class ContactController extends Controller
         return view('contacts.add');
     }
 
+    
     /**
      * Save records from Add Form to Seller Table.
     */  
@@ -113,11 +114,93 @@ class ContactController extends Controller
             throw $th;
         }
     }
+
+     /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        $contact = Contact::find($id);
+        
+
+        if(!$contact){
+            return back()->with('error', 'Contact Not Found');
+        }
+
+        return view('contacts.edit',compact('contact'));
+    }
+    
+      /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+
+        $request->validate([
+            'registered_name' => 'required',
+            'trade_name' => 'required',
+            'private_or_government'=> 'required',
+            // 'Tin' => 'required|unique:contacts,Tin,NULL,id,TIN_BranchCode,'. $request->TIN_BranchCode,
+            // 'TIN_BranchCode' => 'required',
+            'address_line1'=> 'required',
+            'Barangay'=> 'required',
+            // 'District'=> 'required',
+            'City'=> 'required',
+            'Province'=> 'required',
+            'ZipCode'=> 'required',
+            'business_email_address' => 'required|email',
+            'contact_number'=> 'required',
+        ]);  
+          
+        $pg= intVal($request->private_or_government)+1;
+        try {
+            DB::beginTransaction();
+            $update_contact = Contact::where('id', $id)
+                ->where('tp_id',session('user_tp_id'))->update([         
+                    'registered_name' => $request->registered_name,
+                    'trade_name' => $request->trade_name,
+                    'private_or_government'=> $pg,
+                    'Tin' => $request->Tin,
+                    'TIN_BranchCode' => $request->TIN_BranchCode,
+                    'address_line1'=> $request->address_line1,
+                    'address_line2' => $request->address_line2,
+                    'Barangay'=> $request->Barangay,
+                    'District'=> $request->District,
+                    'City'=> $request->City,
+                    'Province'=> $request->Province,
+                    'ZipCode'=> $request->ZipCode,
+                    'user_id'=> Auth::user()->id,
+                    'company_id'=> strtoupper($this->getUniqueCode($request->registered_name)),
+            ]);
+
+            if(!$update_contact){
+                DB::rollBack();
+
+                return back()->with('error', 'Something went wrong while update contact data');
+            }
+            
+            DB::commit();
+            return redirect()->route('contacts.index')->with('success', 'Contact Updated Successfully.');
+
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
+    }
+
     public function getUniqueCode($reg_nm)
     {
         do {
             $code = substr($reg_nm,0,3) .date("y") .date("m") . random_int(100000, 999999);
-        } while (Seller::where("seller_cd", "=", $code)->first());
+        } while (Contact::where("company_id", "=", $code)->first());
   
         return $code;
     }
@@ -156,6 +239,7 @@ class ContactController extends Controller
         // if(Auth::user()->user_TP !=null){
         //     $tp_id = session('user_tp_id');
         // }
+        // dd( session('user_tp_id') . ' - '.$id);
         $tp_id = session('user_tp_id');
         $Contact = Contact::select("*")
         ->where('company_id',$id)

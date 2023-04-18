@@ -33,6 +33,9 @@ class Invoice extends Model
         'OtherTaxRev' ,
         'OtherNonTaxCharge'  ,
         'NetAmtPay'  ,
+        'VATableSales' ,
+        'TotNetSalesAftDisct',
+        
          
        
     ];

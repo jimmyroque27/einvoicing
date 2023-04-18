@@ -47,6 +47,11 @@ return new class extends Migration
 
             // Net Amount Payable	
             $table->float('NetAmtPay')->default(0);    //Net Amount Payable
+            
+            // VATableSales	
+            $table->float('VATableSales')->default(0);    //VATableSales
+
+       
 
             // Foreign Currency Information	
             $table->string('ForCur',200)->nullable();       //Foreign Currency

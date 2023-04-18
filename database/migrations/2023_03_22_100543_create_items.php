@@ -15,12 +15,13 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('tp_id')->default(0);
             $table->unsignedBigInteger('user_id')->default(0);
-            $table->unsignedBigInteger('category_id')->default(0);
             
             $table->string('ItemCode',20)->nullable();
             $table->string('item_name',100)->nullable();
             $table->string('Description',100)->nullable();
-            // $table->float('Qty')->nullable();
+            $table->unsignedBigInteger('category_id')->default(0);
+            $table->string('category_name',100)->nullable();
+            
             $table->string('UnitofMeasure',100)->nullable();
             $table->float('UnitSalesPrice')->default(0);
             $table->string('VAT_Type')->nullable();

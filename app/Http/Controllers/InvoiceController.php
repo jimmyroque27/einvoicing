@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\DataTables\InvoicesDataTable;
+use App\DataTables\InvoiceItemDataTable;
 use Auth;
 use App\Models\User;
 use App\Models\Invoice;
@@ -79,10 +80,10 @@ class InvoiceController extends Controller
                 'InvoiceNumber' => strtoupper($this->getUniqueCode($request->Type)),
                 'OrderNumber' => $request->OrderNumber,
                 'OrderDate' => $request->OrderDate,
-                // 'Currency' => $request->currency_id,
-                // 'ForCur' => $request->ForCur,
-                // 'ConvRate' => $request->currency_rate ,
-                // 'ForexAmt' => $request->ForexAmt ,
+                'Currency' => $request->Currency,
+                'ForCur' => $request->ForCur,
+                'ConvRate' => $request->ConvRate ,
+               
                 'TotNetItemSales' => str_replace(',', '', $request->TotNetItemSales) ,
                 'ScAmt' => str_replace(',', '', $request->ScAmt),
                 'PwdAmt' => str_replace(',', '', $request->PwdAmt) ,
@@ -95,7 +96,12 @@ class InvoiceController extends Controller
                 'WithholdBusPT' => str_replace(',', '', $request->WithholdBusPT) ,
                 'OtherTaxRev' => str_replace(',', '', $request->OtherTaxRev) ,
                 'OtherNonTaxCharge' => str_replace(',', '', $request->OtherNonTaxCharge) ,
+                'VATableSales'     => str_replace(',', '', $request->VATableSales ), 
+                'TotNetSalesAftDisct' => str_replace(',', '', $request->TotNetSalesAftDisct) ,
                 'NetAmtPay' => str_replace(',', '', $request->NetAmtPay) ,
+                'ConvRate' => str_replace(',', '', $request->ConvRate) ,
+                'ForexAmt' => str_replace(',', '', $request->ForexAmt) ,
+                
                  
                  
      
@@ -125,10 +131,10 @@ class InvoiceController extends Controller
                     'SpeDscntAmt' => str_replace(',', '',$item->SpeDscntAmt),
                     'NetUnitPrice' => str_replace(',', '',$item->NetUnitPrice ),
                     'NetAmount' => str_replace(',', '',$item->NetAmount ),
-                    'VAT_Type' => $item->VAT_Type ,      
+                    'VAT_Type' => $item->VAT_Type ,                   
                     'ATC' => $item->ATC,
                     'EWT_Rate' => $item->EWT_Rate ,     
-                    'Tax_Withheld' => $item->Tax_Withheld ,           
+                    'Tax_Withheld' => str_replace(',', '',$item->Tax_Withheld ),           
                 ]);
             }
 
@@ -141,6 +147,27 @@ class InvoiceController extends Controller
             throw $th;
         }
     }
+
+     /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id, InvoiceItemDataTable $dataTable)
+    {
+        $invoice = Invoice::find($id);
+        
+
+        if(!$invoice){
+            return back()->with('error', 'Invoice Not Found');
+        }
+
+        // return view('invoices.edit',compact('invoice'));
+
+        return $dataTable->with(['id'=> $id])->render('invoices.edit',compact('invoice'));
+    }
+
     public function getUniqueCode($reg_nm)
     {
         do {

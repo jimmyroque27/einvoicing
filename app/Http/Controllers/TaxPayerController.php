@@ -26,17 +26,6 @@ class TaxPayerController extends Controller
 
         return $dataTable->render('taxpayers.list');
     }
-
-
-    public static function getSeller()
-    {
-        
-        $seller =Seller::find(Auth::user()->seller_id);
-        if(!empty($seller)){
-            return $seller->registered_name;
-        }
-        return;
-    }
     /**
      * Display the specified resource.
      *
@@ -62,7 +51,7 @@ class TaxPayerController extends Controller
     /**
      * Save records from Add Form to Seller Table.
     */  
-    public function store(Request $request)
+    public function store2(Request $request)
     {
          
         if ($request->tp_classification == 1){
@@ -251,6 +240,255 @@ class TaxPayerController extends Controller
             throw $th;
         }
     }
+    public function store(Request $request){
+        $registered_name = "";
+        $last_name = "";
+        $first_name = "";
+        $middle_name = "";
+        $BirthDate = "";
+        $BirthDate = "";
+        $private_or_government='1';
+        
+        if ($request->tp_classification != 2){
+            $request->validate([
+                'BirthDate'=> 'required',
+                'first_name' => 'required',
+                'middle_name' => 'required',
+                'last_name' => 'required',
+            ]);
+            $last_name = $request->last_name;
+            $first_name = $request->first_name;
+            $middle_name = $request->middle_name;
+            $BirthDate = $request->BirthDate;
+            $registered_name = $request->first_name.' '.$request->last_name ;
+        }else{
+           
+            $registered_name = $request->registered_name;
+            $private_or_government=$request->private_or_government;
+            $request->validate([
+                'registered_name' => 'required',
+                'private_or_government'=> 'required',
+            ]);
+        }
+        
+        $request->validate([
+            'trade_name' => 'required',
+            'Tin' => 'required|unique:tax_payers,Tin,NULL,id,TIN_BranchCode,'. $request->TIN_BranchCode,
+            'TIN_BranchCode' => 'required',
+            'cor_issued_date'=> 'required',
+            'cor_ocn'=> 'required',
+            'SEC_Registration_date'=> 'required',
+            'SEC_Registration_No'=> 'required',
+            'industry'=> 'required',
+            'registered_activities'=> 'required',
+            'address_line1'=> 'required',
+            'Barangay'=> 'required',
+            // 'District'=> 'required',
+            'City'=> 'required',
+            'Province'=> 'required',
+            'ZIPCode'=> 'required',
+            'RDO'=> 'required',
+            'CalFiscal'=> 'required',
+            'FiscalEnd'=> 'required',
+            'business_email_address' => 'required|email',
+            'contact_number'=> 'required',
+            'registration_type'=> 'required',
+            'vat_registered'=> 'required',
+            'PtuNum'=>'required',
+        ]);
+        
+       
+        try {
+            DB::beginTransaction();
+            $create_taxpayer = TaxPayer::create([ 
+                    'last_name' => $last_name,
+                    'first_name' => $first_name,
+                    'middle_name' => $middle_name,
+                    'BirthDate' => $BirthDate,
+                    'registered_name' => $registered_name,    
+                    'private_or_government' => $private_or_government,  
+                    'tp_classification' => $request->tp_classification,
+                    'trade_name' => $request->trade_name,
+                    'Tin' => $request->Tin,
+                    'TIN_BranchCode' => $request->TIN_BranchCode,
+                    'cor_issued_date'=> $request->cor_issued_date,
+                    'cor_ocn'=> $request->cor_ocn,
+                    'SEC_Registration_date'=> $request->SEC_Registration_date,
+                    'SEC_Registration_No'=> $request->SEC_Registration_No,
+                    'industry'=> $request->industry,
+                    'registered_activities'=> $request->registered_activities,
+                    'address_line1'=> $request->address_line1,
+                    'Barangay'=> $request->Barangay,
+                    'District'=> $request->District,
+                    'City'=> $request->City,
+                    'Province'=> $request->Province,
+                    'ZIPCode'=> $request->ZIPCode,
+                    'RDO'=> $request->RDO,
+                    'CalFiscal'=> $request->CalFiscal,
+                    'FiscalEnd'=> $request->FiscalEnd,
+                    'business_email_address' => $request->business_email_address,
+                    'contact_number'=> $request->contact_number,
+                    'registration_type'=> $request->registration_type,
+                    'vat_registered'=> $request->vat_registered,
+                    'PtuNum'=>$request->PtuNum,
+                    'tp_id' => $this->getUniqueCode($request->Tin),
+            ]);
+
+            if(!$create_taxpayer){
+                DB::rollBack();
+
+                return back()->with('error', 'Something went wrong while inserting Tax Payer data');
+            }
+            
+            DB::commit();
+            if ((session('role_name')!="Admin" && session('role_name')!="admin")){
+                $create_user_tp = UserTaxPayer::create([
+                    'user_id' => Auth::user()->id,
+                    'Tin' => $create_taxpayer->Tin,
+                    'TIN_BranchCode' => $create_taxpayer->TIN_BranchCode,
+                    'tp_id' => $create_taxpayer->tp_id,
+                    'status' => 'off',
+                ]);
+            }
+            return redirect()->route('taxpayers.index')->with('success', 'Tax Payer Added Successfully.');
+
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
+    }
+    public function edit($id)
+    {
+        $taxpayer = TaxPayer::find($id);
+        
+
+        if(!$taxpayer){
+            return back()->with('error', 'Tax Payer Not Found');
+        }
+
+        return view('taxpayers.edit',compact('taxpayer'));
+    }
+    
+      /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        $registered_name = "";
+        $last_name = "";
+        $first_name = "";
+        $middle_name = "";
+        $BirthDate = "";
+        $BirthDate = "";
+        $private_or_government='1';
+        
+        if ($request->tp_classification != 2){
+            $request->validate([
+                'BirthDate'=> 'required',
+                'first_name' => 'required',
+                'middle_name' => 'required',
+                'last_name' => 'required',
+            ]);
+            $last_name = $request->last_name;
+            $first_name = $request->first_name;
+            $middle_name = $request->middle_name;
+            $BirthDate = $request->BirthDate;
+            $registered_name = $request->first_name.' '.$request->last_name ;
+        }else{
+            // dd($request);
+            $registered_name = $request->registered_name;
+            $private_or_government=$request->private_or_government;
+            $request->validate([
+                'registered_name' => 'required',
+                'private_or_government'=> 'required',
+            ]);
+        }
+        
+        $request->validate([
+            'trade_name' => 'required',
+            'Tin' => 'required|unique:tax_payers,Tin,'.intVal($id).',id,TIN_BranchCode,'. $request->TIN_BranchCode ,
+            'TIN_BranchCode' => 'required',
+            'cor_issued_date'=> 'required',
+            'cor_ocn'=> 'required',
+            'SEC_Registration_date'=> 'required',
+            'SEC_Registration_No'=> 'required',
+            'industry'=> 'required',
+            'registered_activities'=> 'required',
+            'address_line1'=> 'required',
+            'Barangay'=> 'required',
+            // 'District'=> 'required',
+            'City'=> 'required',
+            'Province'=> 'required',
+            'ZIPCode'=> 'required',
+            'RDO'=> 'required',
+            'CalFiscal'=> 'required',
+            'FiscalEnd'=> 'required',
+            'business_email_address' => 'required|email',
+            'contact_number'=> 'required',
+            'registration_type'=> 'required',
+            'vat_registered'=> 'required',
+            'PtuNum'=>'required',
+        ]);
+        
+       
+        try {
+            DB::beginTransaction();
+            $update_taxpayer = TaxPayer::where('id', $id)
+                // ->where('tp_id',session('user_tp_id'))
+                ->update([ 
+                    'last_name' => $last_name,
+                    'first_name' => $first_name,
+                    'middle_name' => $middle_name,
+                    'BirthDate' => $BirthDate,
+                    'registered_name' => $registered_name,    
+                    'private_or_government' => $private_or_government,  
+                    'tp_classification' => $request->tp_classification,
+                    'trade_name' => $request->trade_name,
+                    'Tin' => $request->Tin,
+                    'TIN_BranchCode' => $request->TIN_BranchCode,
+                    'cor_issued_date'=> $request->cor_issued_date,
+                    'cor_ocn'=> $request->cor_ocn,
+                    'SEC_Registration_date'=> $request->SEC_Registration_date,
+                    'SEC_Registration_No'=> $request->SEC_Registration_No,
+                    'industry'=> $request->industry,
+                    'registered_activities'=> $request->registered_activities,
+                    'address_line1'=> $request->address_line1,
+                    'Barangay'=> $request->Barangay,
+                    'District'=> $request->District,
+                    'City'=> $request->City,
+                    'Province'=> $request->Province,
+                    'ZIPCode'=> $request->ZIPCode,
+                    'RDO'=> $request->RDO,
+                    'CalFiscal'=> $request->CalFiscal,
+                    'FiscalEnd'=> $request->FiscalEnd,
+                    'business_email_address' => $request->business_email_address,
+                    'contact_number'=> $request->contact_number,
+                    'registration_type'=> $request->registration_type,
+                    'vat_registered'=> $request->vat_registered,
+                    'PtuNum'=>$request->PtuNum,
+            ]);
+
+            if(!$update_taxpayer){
+                DB::rollBack();
+
+                return back()->with('error', 'Something went wrong while update Tax Payer data');
+            }
+            
+            DB::commit();
+            return redirect()->route('taxpayers.index')->with('success', 'Tax Payer Updated Successfully.');
+
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
+    }
+
     public function getUniqueCode($reg_nm)
     {
         do {
@@ -294,4 +532,13 @@ class TaxPayerController extends Controller
         return response()->json($data);
     }
 
+    public static function getSeller()
+    {
+        
+        $seller =Seller::find(Auth::user()->seller_id);
+        if(!empty($seller)){
+            return $seller->registered_name;
+        }
+        return;
+    }
 }

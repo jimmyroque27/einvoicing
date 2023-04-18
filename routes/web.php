@@ -49,7 +49,7 @@ Route::middleware('auth')->group(function(){
 
     Route::resource('atc', App\Http\Controllers\AlphaTaxCodeController::class,['except' => 'destroy']);
     Route::get('/atc/destroy/{id}', [App\Http\Controllers\AlphaTaxCodeController::class, 'destroy'])->name('atc.destroy');
-    Route::get('/atc/atcList',[App\Http\Controllers\AlphaTaxCodeController::class,'atcList'])->name('atc.atcList');
+    Route::get('/atcList',[App\Http\Controllers\AlphaTaxCodeController::class,'atcList'])->name('atc.atcList');
 
     Route::resource('currency', App\Http\Controllers\CurrencyController::class,['except' => 'destroy']);
     Route::get('/currency/destroy/{id}', [App\Http\Controllers\CurrencyController::class, 'destroy'])->name('currency.destroy');
@@ -89,15 +89,7 @@ Route::middleware('auth')->group(function(){
 
     Route::get('buyersList',[App\Http\Controllers\ContactController::class,'buyersList'])->name('contacts.buyersList');
     
-    // // Sellers
-    // Route::resource('sellers', App\Http\Controllers\SellerController::class);
-
-    // // Buyers
-    // Route::resource('buyers', App\Http\Controllers\BuyerController::class);
-    // Route::controller(App\Http\Controllers\BuyerController::class)->group(function(){
-        // Route::get('demo-search', 'index');
-    // Route::get('buyerslist', 'buyerslist')->name('buyerslist');
-    // });
+     
 
     
 
@@ -108,7 +100,7 @@ Route::middleware('auth')->group(function(){
     Route::get('/products/getItemRow/{id}',[App\Http\Controllers\ItemController::class,'getItemRow'])->name('products.getItemRow');
  
     Route::controller(App\Http\Controllers\ItemController::class)->group(function(){
-        // Route::get('demo-search', 'index');
+     
         Route::get('itemslist', 'itemslist')->name('itemslist');
     });
 

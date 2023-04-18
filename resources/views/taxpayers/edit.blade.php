@@ -25,17 +25,16 @@
         <div class="card-header py-3">
             
             <div class="d-sm-flex align-items-center justify-content-between ">
-                <h6 class="m-0 font-weight-bold text-primary">Add Tax Payer</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Edit Tax Payer</h6>
                 @can('taxpayer-list')
                     <a href="{{route('taxpayers.index')}}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                            class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Tax Payer's List</a>
+                            class="fas fa-arrow-left fa-sm text-white-50"></i> Back</a>
                 @endcan
             </div>
         </div>
         <div class="card-body  text-dark small">
             
-             
-            {!! Form::open(array('route' => 'taxpayers.store','method'=>'POST')) !!}
+            {!! Form::model($taxpayer, ['method' => 'PATCH','route' => ['taxpayers.update', $taxpayer->id]]) !!}
             <div class="row">
 
                 <div class="col-sm-6 ">
@@ -45,7 +44,7 @@
 
                              
                             
-                            {!! Form::select('tp_classification', array('1' => 'Individual', '2' => 'Corporation' ), '1' , array('placeholder' => '','class' => 'form-control  ', "id"=>'tp_classification' )) !!}
+                            {!! Form::select('tp_classification', array('1' => 'Individual', '2' => 'Corporation' ), null , array('placeholder' => '','class' => 'form-control  ', "id"=>'tp_classification' )) !!}
                             @error('tp_classification')
                                 <span class="text-danger">{{$message}}</span>
                             @enderror
@@ -62,7 +61,7 @@
 
                              
                             
-                            {!! Form::select('private_or_government', array('1' => 'Private', '2' => 'Government' ), '1' , array('placeholder' => '','class' => 'form-control  ', "id"=>'tp_classification' )) !!}
+                            {!! Form::select('private_or_government', array('1' => 'Private', '2' => 'Government' ), null , array('placeholder' => '','class' => 'form-control  ', "id"=>'tp_classification' )) !!}
                             @error('private_or_government')
                                 <span class="text-danger">{{$message}}</span>
                             @enderror
@@ -72,7 +71,7 @@
                     <div class="row individual">
                         <div class="col-sm-4 mb-2">
                             <strong>First Name:</strong>
-                            {!! Form::text('first_name', null, array('placeholder' => '','class' => 'form-control','autocomplete'=>'off' )) !!}
+                            {!! Form::text('first_name', null, array('placeholder' => '','class' => 'form-control','autocomplete'=>'off')) !!}
                             @error('first_name')
                                 <span class="text-danger">{{$message}}</span>
                             @enderror
@@ -111,7 +110,7 @@
                         </div>
                         <div class="col-sm-4 mb-2">
                             <strong>Branch Code:</strong>
-                            {!! Form::text('TIN_BranchCode', '000', array('placeholder' => '','class' => 'form-control','autocomplete'=>'off', 'maxlength'=>'3')) !!}
+                            {!! Form::text('TIN_BranchCode', null, array('placeholder' => '','class' => 'form-control','autocomplete'=>'off', 'maxlength'=>'3')) !!}
                             @error('TIN_BranchCode')
                                 <span class="text-danger">{{$message}}</span>
                             @enderror
@@ -201,7 +200,7 @@
                             <strong>Registered as :</strong>
                             
                             
-                            {!! Form::select('registration_type', array('C' => 'Contact Only', 'B' => 'Branch', 'M' => 'Main') , 'M'  , array('placeholder' => '','class' => 'form-control  ' )) !!}
+                            {!! Form::select('registration_type', array('C' => 'Contact Only', 'B' => 'Branch', 'M' => 'Main') , null  , array('placeholder' => '','class' => 'form-control  ' )) !!}
                             @error('registration_type')
                                 <span class="text-danger">{{$message}}</span>
                             @enderror
@@ -296,7 +295,7 @@
                         </div>
                         <div class="col-sm-4 mb-2">
                             <strong>Calendar/Fiscal:</strong>
-                            {!! Form::select('CalFiscal',  array('C' => 'Calendar', 'F' => 'Fiscal'), 'C' , array('placeholder' => '','class' => 'form-control  ','id'=>'CalFiscal' )) !!}
+                            {!! Form::select('CalFiscal',  array('C' => 'Calendar', 'F' => 'Fiscal'), null , array('placeholder' => '','class' => 'form-control  ','id'=>'CalFiscal' )) !!}
                             @error('CalFiscal')
                                 <span class="text-danger">{{$message}}</span>
                             @enderror
@@ -306,7 +305,7 @@
                             <strong>Fiscal:</strong>
                             <?php $indcorp = array("1"=>"01","2"=>"02","3"=>"03","4"=>"04","5"=>"05","6"=>"06","7"=>"07","8"=>"08","9"=>"09","10"=>"10","11"=>"11","12"=>"12");   ?>
                             
-                            {!! Form::select('FiscalEnd',  $indcorp, '1'  , array('placeholder' => '','class' => 'form-control w-50 ','id'=>'FiscalEnd' )) !!}
+                            {!! Form::select('FiscalEnd',  $indcorp, null  , array('placeholder' => '','class' => 'form-control w-50 ','id'=>'FiscalEnd' )) !!}
                             @error('FiscalEnd')
                                 <span class="text-danger">{{$message}}</span>
                             @enderror
@@ -319,7 +318,7 @@
                             <strong>VAT Registration:</strong>
                             
                             
-                            {!! Form::select('vat_registered',  array('0' => 'VAT Registered', '1' => 'Non-VAT Registered'), '0' , array('placeholder' => '','class' => 'form-control  ' )) !!}
+                            {!! Form::select('vat_registered',  array('0' => 'VAT Registered', '1' => 'Non-VAT Registered'), null , array('placeholder' => '','class' => 'form-control  ' )) !!}
                             @error('vat_registered')
                                 <span class="text-danger">{{$message}}</span>
                             @enderror

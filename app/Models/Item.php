@@ -21,6 +21,7 @@ class Item extends Model
         'ATC',
         'EWT_Rate',
         'category_id',
+        'category_name',
         // 
     ];
      

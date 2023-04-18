@@ -105,7 +105,7 @@
                         <div class="row m-0 p-0">
                             <div class="col-md-10  m-0 p-0"   >
                                 <label for="buyer_id"  class="m-0 p-0" >
-                                    <span class="h6 small ">Customer ID: </span> 
+                                    <span class="h6 small ">Customer No.: </span> 
                                 </label>
                                 <input 
                                     type="text" 
@@ -239,7 +239,7 @@
                             <span class="h6 small ">Currency:  </span> 
                          </label>
                         
-                            <select  id="currency_id"  name="currency_id"  value = "old('ConvRate')?old('ConvRate'):0 " class="selectpicker ajax-currency w-100" data-live-search="true"></select>
+                            <select  id="currency_id"  name="currency_id"  value = "old('currency_id')?old('currency_id'):0 " class="selectpicker ajax-currency w-100" data-live-search="true"></select>
                          
 
                         @error('currency_id')
