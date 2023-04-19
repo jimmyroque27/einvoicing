@@ -172,11 +172,11 @@
                         </label>
                         <input 
                             type="date" 
-                            class="form-control  m-0  p-1   w-75 form-control-user @error('OrderDate') is-invalid @enderror" 
+                            class="form-control  m-0  p-1   w-75 form-control-user @error('InvoiceDate') is-invalid @enderror" 
                             id="InvoiceDate"
                             placeholder=""  
                             name="InvoiceDate" 
-                            value="{{ date('Y-m-d') }}">
+                            value="{{ old('InvoiceDate')?old('InvoiceDate'):date('Y-m-d')  }}">
 
                         @error('InvoiceDate')
                             <span class="text-danger">{{$message}}</span>
@@ -211,7 +211,7 @@
                             id="OrderDate"
                             placeholder=""  
                             name="OrderDate" 
-                            value="{{ old('OrderDate') }}">
+                            value="{{ old('OrderDate')?old('OrderDate'):date('Y-m-d')  }}">
 
                         @error('OrderDate')
                             <span class="text-danger">{{$message}}</span>
@@ -1279,7 +1279,7 @@
             $('#ForCur').val($(this).find(':selected').data('forcur'));
             $('#ConvRate').val($(this).find(':selected').data('convrate'));
             
-            
+            computeCurrency();
             
         });
     </script>
@@ -1493,7 +1493,10 @@
     </script>
     {{-- Compute Total --}}
     <script>
-        
+        $('#ConvRate').change(function(){  
+            if ($('#ConvRate').val() =="" || $('#ConvRate').val()=="."){$('#ConvRate').val('0.00') }
+            computeCurrency();
+        });        
         
         $('#ScAmt').change(function(){  
             if ($('#ScAmt').val() =="" || $('#ScAmt').val()=="."){$('#ScAmt').val('0.00') }
@@ -1533,10 +1536,7 @@
             computeNetSummary(); 
         });
 
-        $('#ConvRate').change(function(){  
-            if ($('#ConvRate').val() =="" || $('#ConvRate').val()=="."){$('#ConvRate').val('0') }
-            computeNetSummary();  
-        });
+       
          
         function computeNetSummary(){
             var TotNetItemSales = 0;
@@ -1584,12 +1584,15 @@
             $('#TotNetSalesAftDisct').val(TotNetSalesAftDisct.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
             // $('#NetSalesAfterTax').val(NetSalesAfterTax.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
             $('#NetAmtPay').val(NetAmtPay.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+             
+            computeCurrency()
+        };
+        function computeCurrency(){
             $('#ForexAmt').val('0.00');
             if (parseFloat($('#ConvRate').val()) > 0){
-                $('#ForexAmt').val(NetAmtPay * parseFloat($('#ConvRate').val()) );
+                $('#ForexAmt').val(numericFormat($('#NetAmtPay').val().replace(/,/g, '') / parseFloat($('#ConvRate').val()),2,2) );
             }
-        };
-       
+        }
         
     </script>
 @endpush

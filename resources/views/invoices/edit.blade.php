@@ -18,8 +18,16 @@
         height: 30px !important;
         border-radius: 0px !important;
     }
+    .dataTable th{
+        text-align: center !important;
+        vertical-align: middle !important;
+        font-size: 1.2em !important;
+        font-weight: normal !important;
+        
+    }
+     
     .dataTable{
-        font-size: .8em !important;
+        font-size: .75em !important;
         
     }
 </style>
@@ -133,12 +141,28 @@
                 </div>
                 
                             
-                <div class="col-md-2 pr-3 p-0">
-                    {!! Form::hidden('Currency', null, array('placeholder' => '','class' => 'form-control m-0  p-1  ','autocomplete'=>'off', 'id'=>'Currency')) !!}
-                    {!! Form::hidden('ForCur', null, array('placeholder' => '','class' => 'form-control m-0  p-1  ','autocomplete'=>'off', 'id'=>'ForCur')) !!}
-                    <label for="buyer_name"   class="m-0 p-0"  >
+                <div class="col-sm-2  mb-sm-0 input_currency ">
+                 
+                    <label for="currency_id"   class="m-0 p-0"  >
                         <span class="h6 small ">Currency:  </span> 
                     </label>
+                    
+                    {!! Form::text('Currency', null, array('placeholder' => '','class' => 'form-control m-0  p-1  ','autocomplete'=>'off', 'id'=>'Currency')) !!}
+                    {!! Form::hidden('ForCur', null, array('placeholder' => '','class' => 'form-control m-0  p-1  ','autocomplete'=>'off', 'id'=>'ForCur')) !!}
+                    @error('Currency')
+                        <span class="text-danger">{{$message}}</span>
+                    @enderror
+                </div>
+               
+
+                <div class="col-md-2 pr-3 p-0 select_currency">
+                    
+                    
+                    <label for="currency_id"   class="m-0 p-0"  >
+                        <span class="h6 small ">Currency:  </span> 
+                    </label>
+                    
+
                     
                     <select  id="currency_id"  name="currency_id"  value = "old('currency_id')?old('currency_id'):0 " class="selectpicker ajax-currency w-100" data-live-search="true"></select>
                      
@@ -174,11 +198,13 @@
                 </div>
                 
             </div>
-            <div class="form-group row m-0 mt-2 mb-4 p-0">
+            <div class="form-group row m-0 mt-2 mb-4 p-1">
                  
                 {{ $dataTable->table(['class' => 'table table-bordered table-stripe'] ) }}
              
-                 
+                <button type="button" class="btn btn-primary m-0 mt-2  rounded-0 " data-toggle="modal" data-target="#addItemModal">
+                    <span class="small"><i class='fas fa-fw fa-plus'></i> Add Item</span>
+                </button>
             </div>
             {{-- Summary Total Information --}}
             <div class="form-group row m-0 p-0 mt-2">
@@ -442,10 +468,233 @@
             <hr/>
             <div class="row">  
                 <div class="col-xs-12 col-sm-12 col-md-12 text-center">
-                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="submit" class="btn btn-primary">Save Invoice</button>
                 </div>
             </div>
             {!! Form::close() !!}
+
+
+             <!-- Add Invoice Item Modal -->
+             <div class="modal fade" id="addItemModal" tabindex="-1" role="dialog" aria-labelledby="addItemModalTitle" aria-hidden="true">
+                <div class="modal-dialog "   role="document">
+                    <div class="modal-content rounded-0" style="width: 650px !important">
+                        <div class="modal-header rounded-0 bg-warning m-0 p-2">
+                            <h6 class="modal-title text-white" id="addItemModalTitle">Add Line Item</h6>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        {!! Form::open(array('route' => ['invoices.store_item', $invoice->id],'method'=>'POST')) !!}
+                           
+                        <div class="modal-body  m-2">
+                            
+                            {{-- Item Code --}}
+                            <div class="form-group row m-0 p-1">
+                                <div class="col-md-3  m-0 p-0"   > 
+                                        <label for="ItemCode"   class="m-0 p-0"  >
+                                        <span class="h6 small ">Item No.:  </span> 
+                                    </label>
+                                </div>
+                                <div class="col-md-3  m-0 p-0"   >
+                                    {!! Form::text('ItemCode', old('ItemCode')?old('ItemCode'):null, array('placeholder' => '','class' => 'form-control m-0  p-1  ','autocomplete'=>'off','id'=>'ItemCode','required' )) !!}
+                                    @error('ItemCode')
+                                        <span class="text-danger">{{$message}}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-1 m-0 p-0 " >
+                                    <a href="#" id="getItem" class="btn btn-dark rounded-0 m-0 p-0 check-btn-item  ">
+                                        <i class="fas fa-fw fa-check"></i>
+                                    </a>
+                                </div>
+                                    
+                            </div>
+                            {{-- Item Description --}}
+                            <div class="form-group row m-0 p-1">
+                                <div class="col-md-3  m-0 p-0"   > 
+                                    <label for="item_name"   class="m-0 p-0"  >
+                                    <span class="h6 small ">Item Name:  </span> 
+                                    </label>
+                                </div>
+                                <div class="col-md-9  m-0 p-0"   >
+                                    {!! Form::text('item_name', old('item_name')?old('item_name'):null, array('placeholder' => '','class' => 'form-control m-0  p-1  ','autocomplete'=>'off','readonly','id'=>'item_name','required' )) !!}
+                                    <select  id="product_id"  name="product_id"    class="selectpicker ajax-product w-100" data-live-search="true"></select>
+                                    
+                                    @error('item_name')
+                                        <span class="text-danger">{{$message}}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            {{-- Quantity --}}
+                            <div class="form-group row m-0 p-1">
+                                <div class="col-md-3  m-0 p-0"   > 
+                                    <label for="Qty"   class="m-0 p-0"  >
+                                    <span class="h6 small ">Quantity:</span> 
+                                    </label>
+                                </div>
+                                <div class="col-md-3  m-0 p-0"   >
+                                    {!! Form::text('Qty', old('Qty')?old('Qty'):0, array('placeholder' => '','class' => 'form-control m-0  p-1 floatNumber ','autocomplete'=>'off','id'=>'Qty','required' )) !!}
+                                    @error('Qty')
+                                        <span class="text-danger">{{$message}}</span>
+                                    @enderror
+                                </div>
+                                {{-- Unit of Measure --}}
+                                    
+                                <div class="col-md-3  m-0 p-0"   >
+                                    {!! Form::text('UnitofMeasure', old('UnitofMeasure')?old('UnitofMeasure'):null, array('placeholder' => '','class' => 'form-control m-0  p-1 border-0  ','autocomplete'=>'off','id'=>'UnitofMeasure' )) !!}
+                                    @error('UnitofMeasure')
+                                        <span class="text-danger">{{$message}}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            {{-- Unit Price --}}
+                            <div class="form-group row m-0 p-1">
+                                <div class="col-md-3  m-0 p-0"   > 
+                                    <label for="UnitSalesPrice"   class="m-0 p-0"  >
+                                    <span class="h6 small ">Unit Price:</span> 
+                                    </label>
+                                </div>
+                                <div class="col-md-3  m-0 p-0"   >
+                                    {!! Form::text('UnitSalesPrice', old('UnitSalesPrice')?old('UnitSalesPrice'):0.00, array('placeholder' => '','class' => 'form-control m-0  p-1 floatNumber ','autocomplete'=>'off','id'=>'UnitSalesPrice' )) !!}
+                                    @error('UnitSalesPrice')
+                                        <span class="text-danger">{{$message}}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="form-group row m-0 p-0">
+                                <div class="col-md-6  m-0 p-0 pl-1"   > 
+                                    
+                                    {{-- Regular Discount --}}
+                                    <div class="form-group row m-0 p-0 pt-1 pb-1">
+                                        <div class="col-md-6  m-0 p-0"   > 
+                                            <label for="RegDscntAmt"   class="m-0 p-0"  >
+                                            <span class="h6 small ">Regular Discount:</span> 
+                                            </label>
+                                        </div>
+                                        <div class="col-md-6  m-0 p-0"   >
+                                            {!! Form::text('RegDscntAmt', old('RegDscntAmt')?old('RegDscntAmt'):0.00, array('placeholder' => '','class' => 'form-control m-0  p-1 floatNumber ','autocomplete'=>'off','id'=>'RegDscntAmt' )) !!}
+                                            @error('RegDscntAmt')
+                                                <span class="text-danger">{{$message}}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    {{-- Special Discount --}}
+                                    <div class="form-group row m-0 p-0 pt-1 pb-1">
+                                        <div class="col-md-6  m-0 p-0"   > 
+                                            <label for="SpeDscntAmt"   class="m-0 p-0"  >
+                                            <span class="h6 small ">Special Discount:</span> 
+                                            </label>
+                                        </div>
+                                        <div class="col-md-6  m-0 p-0"   >
+                                            {!! Form::text('SpeDscntAmt', old('SpeDscntAmt')?old('SpeDscntAmt'):0.00, array('placeholder' => '','class' => 'form-control m-0  p-1 floatNumber ','autocomplete'=>'off','id'=>'SpeDscntAmt' )) !!}
+                                            @error('SpeDscntAmt')
+                                                <span class="text-danger">{{$message}}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    {{-- Net Unit Price --}}
+                                    <div class="form-group row m-0 p-0 pt-1 pb-1">
+                                        <div class="col-md-6  m-0 p-0"   > 
+                                            <label for="NetUnitPrice"   class="m-0 p-0"  >
+                                            <span class="h6 small ">Net Unit Price:</span> 
+                                            </label>
+                                        </div>
+                                        <div class="col-md-6  m-0 p-0"   >
+                                            {!! Form::text('NetUnitPrice', old('NetUnitPrice')?old('NetUnitPrice'):0.00, array('placeholder' => '','class' => 'form-control m-0  p-1 floatNumber ','autocomplete'=>'off','readonly', 'id'=>'NetUnitPrice' )) !!}
+                                            @error('NetUnitPrice')
+                                                <span class="text-danger">{{$message}}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    {{-- Net Amount --}}
+                                    <div class="form-group row m-0 p-0 pt-1 pb-1">
+                                        <div class="col-md-6  m-0 p-0"   > 
+                                            <label for="NetAmount"   class="m-0 p-0"  >
+                                            <span class="h6 small ">Net Amount:</span> 
+                                            </label>
+                                        </div>
+                                        <div class="col-md-6  m-0 p-0"   >
+                                            {!! Form::text('NetAmount', old('NetAmount')?old('NetAmount'):0.00, array('placeholder' => '','class' => 'form-control m-0  p-1 floatNumber ','autocomplete'=>'off','readonly', 'id'=>'NetAmount' )) !!}
+                                            @error('NetAmount')
+                                                <span class="text-danger">{{$message}}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6  m-0 p-0 pl-1"   > 
+                                    {{-- VAT Type --}}
+                                    <div class="form-group row m-0 p-0 pt-1 pb-1">
+                                        <div class="col-md-6  m-0 p-0"   > 
+                                            <label for="VAT_Type"   class="m-0 p-0"  >
+                                            <span class="h6 small ">VAT Type:</span> 
+                                            </label>
+                                        </div>
+                                        <div class="col-md-6  m-0 p-0"   >
+                                            {!! Form::text('VAT_Type', old('VAT_Type')?old('VAT_Type'):null, array('placeholder' => '','class' => 'form-control m-0  p-1  ','autocomplete'=>'off','id'=>'VAT_Type','readonly' )) !!}
+                                            @error('VAT_Type')
+                                                <span class="text-danger">{{$message}}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    {{-- ATC --}}
+                                    <div class="form-group row m-0 p-0 pt-1 pb-1">
+                                        <div class="col-md-6  m-0 p-0"   > 
+                                            <label for="VAT_Type"   class="m-0 p-0"  >
+                                            <span class="h6 small ">ATC:</span> 
+                                            </label>
+                                        </div>
+                                        <div class="col-md-6  m-0 p-0"   >
+                                            {!! Form::text('ATC', old('ATC')?old('ATC'):null, array('placeholder' => '','class' => 'form-control m-0  p-1  ','autocomplete'=>'off','id'=>'ATC','readonly' )) !!}
+                                            @error('ATC')
+                                                <span class="text-danger">{{$message}}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    {{-- EWT_Rate --}}
+                                    <div class="form-group row m-0 p-0 pt-1 pb-1">
+                                        <div class="col-md-6  m-0 p-0"   > 
+                                            <label for="EWT_Rate"   class="m-0 p-0"  >
+                                            <span class="h6 small ">EWT Rate:</span> 
+                                            </label>
+                                        </div>
+                                        <div class="col-md-6  m-0 p-0"   >
+                                            {!! Form::text('EWT_Rate', old('EWT_Rate')?old('EWT_Rate'):0.00, array('placeholder' => '','class' => 'form-control m-0  p-1 floatNumber ','autocomplete'=>'off','readonly', 'id'=>'EWT_Rate' )) !!}
+                                            @error('EWT_Rate')
+                                                <span class="text-danger">{{$message}}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    {{-- Tax Withhelld --}}
+                                    <div class="form-group row m-0 p-0 pt-1 pb-1">
+                                        <div class="col-md-6  m-0 p-0"   > 
+                                            <label for="Tax_Withheld"   class="m-0 p-0"  >
+                                            <span class="h6 small ">Tax Withhelld:</span> 
+                                            </label>
+                                        </div>
+                                        <div class="col-md-6  m-0 p-0"   >
+                                            {!! Form::text('Tax_Withheld', old('Tax_Withheld')?old('Tax_Withheld'):0.00, array('placeholder' => '','class' => 'form-control m-0  p-1 floatNumber ','autocomplete'=>'off','readonly', 'id'=>'Tax_Withheld' )) !!}
+                                            @error('Tax_Withheld')
+                                                <span class="text-danger">{{$message}}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                
+                                
+                            
+                          
+
+
+                        </div>
+                        <div class="modal-footer ">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                            <button type="submit" class="btn btn-success btn-save-item">Save Invoice Item</button>
+                        </div>
+                        {!! Form::close() !!}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -671,11 +920,198 @@
             $('#ForCur').val($(this).find(':selected').data('forcur'));
             $('#ConvRate').val($(this).find(':selected').data('convrate'));
             
+            if ($('#ConvRate').val() =="" || $('#ConvRate').val()=="."){$('#ConvRate').val('0.00') }
+            computeCurrency(); 
             
+        });
+        $('.select_currency').hide(); 
+        $('#Currency').focus(function(){
+            $('.input_currency').hide(); 
+            $('.select_currency').show(); 
+            
+             
+        });
+    </script>
+ 
+
+    {{-- Check Item ID --}}
+    <script>
+        $('#item_name').hide();
+        $('#product_id').selectpicker('show');
+            
+        $("#getItem").click(function(){
+        
+            $('.check-btn-item').removeClass('checked');
+            if($("#ItemCode").val()!=""){
+                var getTP_url = "/products/getItemRow/"+$("#ItemCode").val() ;
+                
+                $.ajax({url: getTP_url ,                  
+                    success: function(data) {
+                        if ($.trim(data)){
+                            $('.check-btn-item').addClass('checked');
+                            $("#item_name").val(data[0]['item_name']);
+                            $("#product_id").val(data[0]['ItemCode']);
+                            $("#VAT_Type").val(data[0]['VAT_Type']);
+                            $('.selectpicker').val(data[0]['ItemCode']);
+                            $('#product_id').selectpicker('render');
+                            $("#UnitofMeasure").val(data[0]['UnitofMeasure']);
+                            $("#UnitSalesPrice").val(data[0]['UnitSalesPrice']);
+                            $("#ATC").val(data[0]['ATC']);
+                            $("#EWT_Rate").val(data[0]['EWT_Rate']);
+                             
+                            $('#product_id').selectpicker('hide');
+                            $('#item_name').show();
+                            // alert("aaadfdsdafsdfass")
+                        }else{
+                            Swal.fire( 'Item No. Not Found!')  
+                            clearItemEntry(); 
+                        } 
+                    },
+                    error: function(xhr, status, error) {
+                        var err = eval("(" + xhr.responseText + ")");
+                        Swal.fire( 'Error processing!') 
+                        clearItemEntry();
+                    }
+                });
+            } 
+        
+        });
+    </script>
+
+    {{-- Search Item - Select picker --}}
+    <script>
+        if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
+            $('.selectpicker').selectpicker('mobile');
+        }
+
+        var path2 = "{{ route('itemslist') }}";
+        var select_product = {
+            // dropdownParent: $("#addItemModal"),
+            ajax          : {
+                url     :  path2,
+                type    : 'get',
+                dataType: 'json',
+                data    : function() { // This is a function that is run on every request
+                    return {
+                        id:$(".ajax-product input").val() //this is an input search parameter
+                    };
+                },
+                success: function(data) {
+
+                    //    alert(  JSON.stringify(data));
+                
+                    
+                },
+                error: function(xhr, status, error) {
+                    var err = eval("(" + xhr.responseText + ")");
+                    alert(xhr.responseText +status + error);
+                }
+                
+            },
+            locale        : {
+                emptyTitle: 'Select Item'
+            },
+            preserveSelected: false,
+            clearOnEmpty: true,
+            cache: false,
+            emptyRequest: true,
+            // log           : 3,
+            preprocessData: function (data) {
+                var i, l = data.length, array2 = [];
+                if (l) {
+                    // alert(JSON.stringify(data))
+                    for (i = 0; i < l; i++) {
+                        // alert(data[i].item_name + data[i].ItemCode + data[i].id + data[i].UnitofMeasure+data[i].UnitSalesPrice+data[i].VAT_Type)
+                        // alert()
+                        array2.push($.extend(true, data[i], {
+                            text : data[i].item_name,
+                            value: data[i].item_name,
+                            ItemCode: data[i].ItemCode,
+                            item_name: data[i].item_name,
+                            UnitofMeasure: data[i].UnitofMeasure,
+                            UnitSalesPrice: data[i].UnitSalesPrice,
+                            VAT_Type: data[i].VAT_Type,
+                            ATC: data[i].ATC,
+                            EWT_Rate: data[i].EWT_Rate,
+                             
+                            
+                            data : {
+                                subtext: "Item No.:"+ data[i].ItemCode,
+                                ItemCode: data[i].ItemCode,
+                                item_name: data[i].item_name,
+                                UnitofMeasure: data[i].UnitofMeasure,
+                                UnitSalesPrice: data[i].UnitSalesPrice,
+                                VAT_Type: data[i].VAT_Type,
+                                ATC: data[i].ATC,
+                                EWT_Rate: data[i].EWT_Rate,
+                                 
+                            }
+                        }));
+                        // alert(JSON.stringify(array2))
+                    }
+                }
+                
+                return array2;   
+            }
+        };
+
+        $('.selectpicker').selectpicker().filter('.ajax-product').ajaxSelectPicker(select_product);
+        $('select.ajax-product').trigger('change');
+        $('#product_id').change(function(){
+            // alert("dsfsdf")
+            //alert($(this).find(':selected').data('onhand'));
+            $('#VAT_Type').val($(this).find(':selected').data('vat_type'));
+            $('#ATC').val($(this).find(':selected').data('atc'));
+            $('#EWT_Rate').val($(this).find(':selected').data('ewt_rate'));
+             
+            $('#UnitofMeasure').val($(this).find(':selected').data('unitofmeasure'));
+            $('#UnitSalesPrice').val($(this).find(':selected').data('unitsalesprice'));
+            $('#ItemCode').val($(this).find(':selected').data('itemcode'));
+            $('#item_name').val($(this).find(':selected').data('item_name'));
+            computeItemTotal();
+            //   getTotal();
+            
+            var dataname = $("option[value=" + $(this).val() + "]", this).attr('data-itemcode');
+            // alert(dataname);
             
         });
     </script>
 
+    {{-- Clear New Item Line --}}
+    <script>
+        function clearItemEntry(){
+        
+            $('#item_name').hide();
+            $('.check-btn-item').removeClass('checked');
+            $('#product_id.selectpicker').val('');
+            $('#product_id').selectpicker('show');
+            $('#product_id').selectpicker('render');
+            $('#item_name').val('');
+            $('#ItemCode').val('');
+            $('#Qty').val('0');
+            $('#UnitofMeasure').val('');
+            $('#VAT_Type').val('');
+            $('#ATC').val('');
+            $('#EWT_Rate').val('0.00');
+            $('#Tax_Withheld').val('0.00');
+            $('#UnitSalesPrice').val('0.00');
+            $('#RegDscntAmt').val('0.00');
+            $('#SpeDscntAmt').val('0.00');
+            $('#NetUnitPrice').val('0.00')
+            $('#NetAmount').val('0.00')
+        }
+    </script>
+    {{-- Item Key Input Change --}}
+    <script>
+        $(document).ready(function(){
+            $('#ItemCode').change(function(){
+                itemval = $('#ItemCode').val();
+                clearItemEntry();
+                $('#ItemCode').val(itemval);
+                
+            });
+        });
+    </script>
     {{-- Compute Net Item Amount (after discount) --}}
     <script>
         $('#Qty').change(function(){ computeItemTotal(); });
@@ -701,14 +1137,17 @@
                 $('#Tax_Withheld').val(tax.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
                 
             }
-        
+           
 
         }
     </script>
     {{-- Compute Total --}}
     <script>
-        
-        
+         
+        $('#ConvRate').change(function(){  
+            if ($('#ConvRate').val() =="" || $('#ConvRate').val()=="."){$('#ConvRate').val('0.00') }
+            computeCurrency();
+        });
         $('#ScAmt').change(function(){  
             if ($('#ScAmt').val() =="" || $('#ScAmt').val()=="."){$('#ScAmt').val('0.00') }
             computeNetSummary(); 
@@ -747,88 +1186,69 @@
             computeNetSummary(); 
         });
 
-        $('#ConvRate').change(function(){  
-            if ($('#ConvRate').val() =="" || $('#ConvRate').val()=="."){$('#ConvRate').val('0') }
-            computeNetSummary();  
-        });
+         
         
         function computeNetSummary(){
-            var TotNetItemSales = 0;
-            var NetAmtPay   = 0;
-            var VATAmount  = 0;
-            var VATableSales = 0;
-            var TotNetSalesAftDisct = 0;
-            var VATAmt = 0;
-            var TotalDiscount=0;
-            var TotalTax = 0;
-            var NetSalesAfterTax = 0;
-            var i, l = itemArrays.length;
-            var Tax_Withheld =0;
-            if (l) {
-                for (i = 0; i < l; i++) {
-                    
-                    var data = itemArrays[i];
-                    TotNetItemSales += parseFloat(data.NetAmount.replace(/,/g, ''));
-                    if (data.VAT_Type != 'A2' && data.VAT_Type != 'A3'){
-                        VATableSales += parseFloat(data.NetAmount.replace(/,/g, ''));
-                    }
-                    Tax_Withheld += parseFloat(data.Tax_Withheld.replace(/,/g, ''));
-                    // alert(JSON.stringify(array2))
-                }
-            }
-            TotalDiscount = parseFloat($('#ScAmt').val())  + parseFloat($('#PwdAmt').val()) + parseFloat($('#RegAmt').val()) + parseFloat($('#SpeAmt').val())
+            var TotNetItemSales = $('#TotNetItemSales').val().replace(/,/g, '');
+            var VATableSales = $('#VATableSales').val().replace(/,/g, '');
+            var NetAmtPay = $('#NetAmtPay').val().replace(/,/g, '');
+            var VATAmt = $('#VATAmt').val().replace(/,/g, '');
             
-            $('#WithholdIncome').val(Tax_Withheld.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-                
-            VATableSales = VATableSales + parseFloat($('#OtherTaxRev').val()) - TotalDiscount;
-            TotNetSalesAftDisct = TotNetItemSales + parseFloat($('#OtherTaxRev').val()) - TotalDiscount;
-            VATAmt = (VATableSales - (VATableSales / 1.12));
-            VATableSales = (VATableSales / 1.12);
-            TotalTax =  parseFloat($('#WithholdIncome').val().replace(/,/g, '')) + parseFloat($('#WithholdBusVAT').val()) + parseFloat($('#WithholdBusPT').val())
-            NetSalesAfterTax = TotNetSalesAftDisct - TotalTax;
-            NetAmtPay =  NetSalesAfterTax + parseFloat($('#OtherNonTaxCharge').val()) ;
+            var WithholdIncome = $('#WithholdIncome').val().replace(/,/g, '');
+            var WithholdBusVAT = $('#WithholdBusVAT').val().replace(/,/g, '');
+            var WithholdBusPT = $('#WithholdBusPT').val().replace(/,/g, '');
+            var TotNetSalesAftDisct = $('#TotNetSalesAftDisct').val().replace(/,/g, '');
+            var ScAmt = $('#ScAmt').val().replace(/,/g, '');
+            var PwdAmt = $('#PwdAmt').val().replace(/,/g, '');
+            var RegAmt = $('#RegAmt').val().replace(/,/g, '');
+            var SpeAmt = $('#SpeAmt').val().replace(/,/g, '');
+            
+            var OtherTaxRev = $('#OtherTaxRev').val().replace(/,/g, '');
+            var OtherNonTaxCharge = $('#OtherNonTaxCharge').val().replace(/,/g, '');
+            var TotalDiscount = parseFloat(SpeAmt)  + parseFloat(RegAmt) + parseFloat(PwdAmt) + parseFloat(ScAmt)
+            var TotNetSalesAftDisct = TotNetItemSales - TotalDiscount;
+            var NetSalesAfterTax = TotNetSalesAftDisct - WithholdIncome - WithholdBusVAT -WithholdBusPT;
+            NetAmtPay =  NetSalesAfterTax + parseFloat(OtherNonTaxCharge)+ parseFloat(OtherTaxRev) ;
 
             // alert(($('#ScAmt').val()));
             
         
             
-            $('#VATableSales').val(VATableSales.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            $('#VATAmt').val(VATAmt.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            $('#TotNetItemSales').val(TotNetItemSales.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            $('#TotNetSalesAftDisct').val(TotNetSalesAftDisct.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            // $('#NetSalesAfterTax').val(NetSalesAfterTax.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            $('#NetAmtPay').val(NetAmtPay.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+            $('#VATableSales').val(numericFormat(VATableSales,2,2));
+            $('#VATAmt').val(numericFormat(VATAmt,2,2));
+            $('#TotNetSalesAftDisct').val(numericFormat(TotNetSalesAftDisct,2,2));
+            $('#NetAmtPay').val(numericFormat(NetAmtPay,2,2));
+             
+            computeCurrency()
+        };
+        function computeCurrency(){
             $('#ForexAmt').val('0.00');
             if (parseFloat($('#ConvRate').val()) > 0){
-                $('#ForexAmt').val(NetAmtPay * parseFloat($('#ConvRate').val()) );
+                $('#ForexAmt').val(numericFormat($('#NetAmtPay').val().replace(/,/g, '') / parseFloat($('#ConvRate').val()),2,2) );
             }
-        };
-       
+        }
         
     </script>
     {{-- Initialized --}}
     <script>
          $(document).ready(function(){
             
-            $('#VATableSales').val( $('#VATableSales').val().toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            VATableSales=parseFloat($('#VATableSales').val());
-            alert(VATableSales.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            $('#VATAmt').val($('#VATAmt').val().toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            $('#TotNetItemSales').val($('#TotNetItemSales').val().toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            $('#TotNetSalesAftDisct').val($('#TotNetSalesAftDisct').val().toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            $('#NetAmtPay').val($('#NetAmtPay').val().toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            $('#ForexAmt').val($('#ForexAmt').val().toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            $('#ScAmt').val($('#ScAmt').val().toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            $('#PwdAmt').val($('#PwdAmt').val().toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            $('#RegAmt').val($('#RegAmt').val().toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            $('#SpeAmt').val($('#SpeAmt').val().toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            $('#WithholdIncome').val($('#WithholdIncome').val().toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            $('#WithholdBusVAT').val($('#WithholdBusVAT').val().toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            $('#WithholdBusPT').val($('#WithholdBusPT').val().toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            $('#OtherTaxRev').val($('#OtherTaxRev').val().toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-            $('#OtherNonTaxCharge').val($('#OtherNonTaxCharge').val().toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-        
-
+            $('#VATableSales').val(numericFormat($('#VATableSales').val(),2,2));
+            $('#VATAmt').val(numericFormat($('#VATAmt').val(),2,2));
+            $('#TotNetItemSales').val(numericFormat($('#TotNetItemSales').val(),2,2));
+            $('#TotNetSalesAftDisct').val(numericFormat($('#TotNetSalesAftDisct').val(),2,2));
+            $('#NetAmtPay').val(numericFormat($('#NetAmtPay').val(),2,2));
+            $('#ForexAmt').val(numericFormat($('#ForexAmt').val(),2,2));
+            $('#ScAmt').val(numericFormat($('#ScAmt').val(),2,2));
+            $('#PwdAmt').val(numericFormat($('#PwdAmt').val(),2,2));
+            $('#RegAmt').val(numericFormat($('#RegAmt').val(),2,2));
+            $('#SpeAmt').val(numericFormat($('#SpeAmt').val(),2,2));
+            $('#WithholdIncome').val(numericFormat($('#WithholdIncome').val(),2,2));
+            $('#WithholdBusVAT').val(numericFormat($('#WithholdBusVAT').val(),2,2));
+            $('#WithholdBusPT').val(numericFormat($('#WithholdBusPT').val(),2,2));
+            $('#OtherTaxRev').val(numericFormat($('#OtherTaxRev').val(),2,2));
+            $('#OtherNonTaxCharge').val(numericFormat($('#OtherNonTaxCharge').val(),2,2));
+            
         });
     </script>
 @endpush

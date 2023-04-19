@@ -112,7 +112,13 @@ Route::middleware('auth')->group(function(){
     // Invoices
     Route::resource('invoices', App\Http\Controllers\InvoiceController::class,['except' => 'destroy']);
     Route::get('/invoices/destroy/{id}', [App\Http\Controllers\InvoiceController::class, 'destroy'])->name('invoices.destroy');
+    Route::get('/invoices/destroy_item/{id}/{invid}', [App\Http\Controllers\InvoiceController::class, 'destroy_item'])->name('invoices.destroy_item');
+    Route::post('/invoices/store_item/{id}', [App\Http\Controllers\InvoiceController::class, 'store_item'])->name('invoices.store_item');
+    Route::get('/invoices/update_item/{id}/{invid}', [App\Http\Controllers\InvoiceController::class, 'update_item'])->name('invoices.update_item');
     
+    // Route::get('/invoices/computeInvoice/{invid}', [App\Http\Controllers\InvoiceController::class, 'computeInvoice'])->name('invoices.computeInvoice');
+    
+
 
 
 

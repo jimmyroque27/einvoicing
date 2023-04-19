@@ -59,10 +59,7 @@ class InvoiceController extends Controller
             'buyer_name' => 'required',
             'InvoiceDate' => 'required',
             'items' => 'required',
-            // 'RegNm' => 'required',
-            // 'BusinessNm' => 'required',
-            // 'Email' => 'required|email',
-            // 'RegAddr' => 'required' 
+            
         ]);
         if (session('user_tp_id') == '0000000000'){
             return back()->with('error', 'No Tax Payer Assigned... Unable to save data...');
@@ -167,7 +164,75 @@ class InvoiceController extends Controller
 
         return $dataTable->with(['id'=> $id])->render('invoices.edit',compact('invoice'));
     }
+    public function update(Request $request,$id)
+    {
+        $request->validate([
+            
+            'buyer_id' => 'required',
+            'buyer_name' => 'required',
+            'InvoiceDate' => 'required',
+            
+            
+        ]);
+        if (session('user_tp_id') == '0000000000'){
+            return back()->with('error', 'No Tax Payer Assigned... Unable to save data...');
+        }
+        try {
+            DB::beginTransaction();
+            // Logic For Save User Data
+            // dd($request->items);
+           
+            $update_invoice = Invoice::where('id',$id)->where('seller_id',session('user_tp_id'))
+                ->update([
+                 
+                'buyer_id' => $request->buyer_id,
+                'RegNm' => $request->buyer_name,
+                'InvoiceDate' => $request->InvoiceDate,
+                 
+                'OrderNumber' => $request->OrderNumber,
+                'OrderDate' => $request->OrderDate,
+                'Currency' => $request->Currency,
+                'ForCur' => $request->ForCur,
+                'ConvRate' => $request->ConvRate ,
+               
+                'TotNetItemSales' => str_replace(',', '', $request->TotNetItemSales) ,
+                'ScAmt' => str_replace(',', '', $request->ScAmt),
+                'PwdAmt' => str_replace(',', '', $request->PwdAmt) ,
+                'RegAmt' => str_replace(',', '', $request->RegAmt ),
+                'SpeAmt' => str_replace(',', '', $request->SpeAmt ),
+                'Rmk2' =>  $request->Rmk2 ,
+                'VATAmt' => str_replace(',', '', $request->VATAmt) ,
+                'WithholdIncome' => str_replace(',', '', $request->WithholdIncome) ,
+                'WithholdBusVAT' => str_replace(',', '', $request->WithholdBusVAT) ,
+                'WithholdBusPT' => str_replace(',', '', $request->WithholdBusPT) ,
+                'OtherTaxRev' => str_replace(',', '', $request->OtherTaxRev) ,
+                'OtherNonTaxCharge' => str_replace(',', '', $request->OtherNonTaxCharge) ,
+                'VATableSales'     => str_replace(',', '', $request->VATableSales ), 
+                'TotNetSalesAftDisct' => str_replace(',', '', $request->TotNetSalesAftDisct) ,
+                'NetAmtPay' => str_replace(',', '', $request->NetAmtPay) ,
+                'ConvRate' => str_replace(',', '', $request->ConvRate) ,
+                'ForexAmt' => str_replace(',', '', $request->ForexAmt) ,
+                
+            ]);
 
+
+            if(!$update_invoice){
+                DB::rollBack();
+
+                return back()->with('error', 'Something went wrong while updating Invoice data');
+            }
+            
+             
+
+            DB::commit();
+            return redirect()->route('invoices.index'  )->with('success', 'Invoice Updated Successfully.');
+
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
+    }
     public function getUniqueCode($reg_nm)
     {
         do {
@@ -188,7 +253,8 @@ class InvoiceController extends Controller
   
         return $code;
     }
-
+    
+    
     public function destroy($id)
     {
         try {
@@ -210,5 +276,139 @@ class InvoiceController extends Controller
             DB::rollBack();
             throw $th;
         }
+    }
+    public function store_item(Request $request,$id)
+    {
+        $request->validate([
+            'ItemCode' => 'required',
+            'item_name' => 'required',
+            'Qty' => 'required',     
+        ]);
+        if ($request->Qty <= 0){
+            return back()->with('error', 'Invalid Item Qty! Unable to save data...');
+        }
+        if (session('user_tp_id') == '0000000000'){
+            return back()->with('error', 'No Tax Payer Assigned... Unable to save data...');
+        }
+        try {
+            DB::beginTransaction();
+            $create_invoice_item = InvoiceItem::create([
+                'invoice_id'=> $id ,
+                'ItemCode' => $request->ItemCode,
+                'item_name'  => $request->item_name,
+                'Qty' => $request->Qty,
+                'UnitofMeasure' => $request->UnitofMeasure,
+                'UnitSalesPrice' => str_replace(',', '',$request->UnitSalesPrice),
+                'RegDscntAmt' => str_replace(',', '',$request->RegDscntAmt),
+                'SpeDscntAmt' => str_replace(',', '',$request->SpeDscntAmt),
+                'NetUnitPrice' => str_replace(',', '',$request->NetUnitPrice ),
+                'NetAmount' => str_replace(',', '',$request->NetAmount ),
+                'VAT_Type' => $request->VAT_Type ,                   
+                'ATC' => $request->ATC,
+                'EWT_Rate' => $request->EWT_Rate ,     
+                'Tax_Withheld' => str_replace(',', '',$request->Tax_Withheld ),           
+            ]);
+
+
+            if(!$create_invoice_item){
+                DB::rollBack();
+
+                return back()->with('error', 'Something went wrong while saving Invoice Item data');
+            }
+             
+            DB::commit();
+            $this->computeInvoice($id);
+            return redirect()->route('invoices.edit',$id)->with('success', 'Invoice Item Added successfully.');
+
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
+         
+    }
+    public function update_item($id, $inv_id)
+    {
+
+    }
+    public function destroy_item($id, $inv_id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $delete_invoice_item = InvoiceItem::whereId($id)->where('invoice_id',$inv_id)->delete();
+
+            if(!$delete_invoice_item){
+                DB::rollBack();
+                return back()->with('error', 'There is an error while deleting invoice item information.');
+            }
+            DB::table('invoice_items')->where('invoice_id',$id)->delete();
+            DB::commit();
+            $this->computeInvoice($inv_id);
+            return redirect()->route('invoices.edit', $inv_id)->with('success', 'Invoice Product Deleted successfully.');
+
+
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
+    }
+    public function computeInvoice($inv_id)
+    {
+        $invoice= Invoice::select('*')->where('id',$inv_id)
+            ->where('seller_id',session('user_tp_id'))->first();
+        $result = DB::table('invoice_items')
+                ->select(DB::raw('sum(NetAmount) as sum_NetAmount, sum(Tax_Withheld) as sum_Tax_Withheld, invoice_id'))
+                ->where('invoice_id',$inv_id)
+                ->groupBy('invoice_id')
+                ->first();
+        $result2 = DB::table('invoice_items')
+            ->select(DB::raw('sum(NetAmount) as sum_NetAmount, sum(Tax_Withheld) as sum_Tax_Withheld, invoice_id'))
+            ->where('invoice_id',$inv_id)
+            ->where('VAT_Type','A1')
+            ->groupBy('invoice_id')
+            ->first();
+        $netitemsales = 0;
+        $taxwithheld = 0;
+        if ($result){
+            $netitemsales =$result->sum_NetAmount;
+            $taxwithheld = $result->sum_Tax_Withheld;
+        }
+        $vatsales = 0;
+        if ($result2){
+            $vatsales =  $result2->sum_NetAmount;
+        }
+        $TotalDiscount = $invoice->SpeAmt + $invoice->RegAmt + $invoice->PwdAmt + $invoice->ScAmt;
+        $TotNetSalesAftDisct = $netitemsales - $TotalDiscount;
+        $TotalTax =   $taxwithheld - $invoice->WithholdBusVAT - $invoice->WithholdBusPT;
+        $NetAmtPay = $TotNetSalesAftDisct - $TotalTax + $invoice->OtherNonTaxCharge + $invoice->OtherTaxRev;
+        $ForexAmt = $NetAmtPay / $invoice->ConvRate;
+        $VATAmt = $vatsales - ($vatsales / 1.12);
+        $VATableSales =  ($vatsales / 1.12);
+        // dd($TotalDiscount .' - '. $TotNetSalesAftDisct . ' - '.$VATAmt. ' - '.$NetAmtPay. ' - '.$invoice->ConvRate. ' = '.$VATableSales. ' - '.$ForexAmt);
+        try {
+            DB::beginTransaction();
+            $update_invoice = Invoice::where('id',$inv_id)->where('seller_id',session('user_tp_id'))
+                ->update([
+                    'TotNetItemSales'=> $netitemsales,
+                    'WithholdIncome'=> $taxwithheld,
+                    'TotNetSalesAftDisct'=> $TotNetSalesAftDisct,
+                    'VATAmt' => $VATAmt,
+                    'VATableSales' => $VATableSales,
+                    'NetAmtPay' => $NetAmtPay,
+                    'ForexAmt' => $ForexAmt,
+                ]);
+
+            if(!$update_invoice){
+                DB::rollBack();   
+            }
+            DB::commit();
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
+                
     }
 }

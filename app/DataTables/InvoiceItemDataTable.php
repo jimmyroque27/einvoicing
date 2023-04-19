@@ -68,9 +68,8 @@ class InvoiceItemDataTable extends DataTable
                     ->dom('')
                     ->columns($this->getColumns())
                     ->minifiedAjax()
-                     
-                    
-                    ->orderBy(1)
+                    ->ordering(false)
+                    // ->orderBy(1)
                     ->selectStyleSingle();
                     // ->buttons([
                     //     Button::make('excel'),
@@ -84,16 +83,16 @@ class InvoiceItemDataTable extends DataTable
     protected function getActionColumn($data): string
     {
         $showUrl="";
-        if(Auth::user()->can('invoice-show')){
-            $showUrl ="<a class='waves-effect btn btn-success' title='show' data-value='$data->id' href='".route('invoices.show', $data->id)."'><i class='fas fa-fw fa-eye'></i></a> ";
-        }
+        // if(Auth::user()->can('invoice-show')){
+        //     $showUrl ="<a class='waves-effect btn btn-success' title='show' data-value='$data->id' href='".route('invoices.show', $data->id)."'><i class='fas fa-fw fa-eye'></i></a> ";
+        // }
         $editUrl ="";
         if(Auth::user()->can('invoice-edit')){
             $editUrl = "<a class='waves-effect btn btn-primary'  title='edit' data-value='$data->id' href='".route('invoices.edit', $data->id)."'><i class='fas fa-fw fa-pen'></i></a>";
         }
         $deleteUrl ="";
         if(Auth::user()->can('invoice-delete')){
-            $deleteUrl ="<a class='waves-effect btn deepPink-bgcolor delete'  title='delete' data-value='$data->id' href='".route('invoices.destroy', $data->id)."'><i class='fas fa-fw fa-trash'></i></a>";
+            $deleteUrl ="<a class='waves-effect btn deepPink-bgcolor delete'  title='delete' data-value='$data->id' href='".route('invoices.destroy_item', ['id'=>$data->id, 'invid'=>$data->invoice_id])."'><i class='fas fa-fw fa-trash'></i></a>";
         }
         return $showUrl.$editUrl.$deleteUrl;
     }
@@ -105,7 +104,7 @@ class InvoiceItemDataTable extends DataTable
         return [
           
             Column::make('ItemCode')->title('Item No.'),
-            Column::make('item_name')->title('Description'),
+            Column::make('item_name')->title('Description')->className('w-25'),
             Column::make('Qty')->title('Quantity')->className('dt-body-right floatNum'),
             Column::make('UnitofMeasure')->title('Unit'),
             Column::make('VAT_Type')->title('VAT Type'),
@@ -117,6 +116,7 @@ class InvoiceItemDataTable extends DataTable
             Column::computed('action')
             ->exportable(false)
             ->printable(false)
+            
             ->width(100)
             ->addClass('text-center'),
         ];

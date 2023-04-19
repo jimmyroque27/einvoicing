@@ -215,9 +215,8 @@ class CurrencyController extends Controller
         //    dd($request->filled('id'));
         if($request->filled('id')){
             $data = Currency::select('*')
-                ->where('name', 'LIKE', '%'. $request->get('id'). '%')
-                ->orwhere('code', 'LIKE', '%'. $request->get('id'). '%')
-                // ->orwhere('ItemCode', 'LIKE', '%'. $request->get('id'). '%')
+                // ->where('name', 'LIKE', '%'. $request->get('id'). '%')
+                ->where('code', 'LIKE', '%'. $request->get('id'). '%')
                 ->where('tp_id', session('user_tp_id'))
                 ->get();
         }else{

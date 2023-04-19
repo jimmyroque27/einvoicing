@@ -177,7 +177,17 @@
         $('input.intNumber').on('input', function() {
             this.value = this.value.replace(/[^0-9]/g,'').replace(/(\..*)\./g, '$1');
         });
+        function numericFormat(eVal, mindec,maxdec){
+            return parseFloat(eVal).toLocaleString('en-US', {minimumFractionDigits: mindec, maximumFractionDigits: maxdec});
+        }
+ 
+        $('input').keypress(function(e){    
+            if(e.keyCode==13){          
+                    e.preventDefault();
+            }    
+        });
     </script>
+    
 </body>
 
 </html>
